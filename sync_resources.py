@@ -1,3 +1,8 @@
+class TestCase:
+    def __init__(self):
+        pass
+
+
 class FrontendAPI:
 
     def __init__(self, _type="mywork"):
