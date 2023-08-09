@@ -104,7 +104,3 @@ def test_prvi(mocker):
     #assert call2 in frontend_sync_mock.call_args_list
     #assert call3 in frontend_sync_mock.call_args_list
     #assert call4 in frontend_sync_mock.call_args_list
-
-
-
-
