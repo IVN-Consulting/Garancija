@@ -154,8 +154,8 @@ class BackendAPI:
         self.workspaces = workspaces
         self._filter = _filter
 
-    def get_workspaces(self, enrich_with_apigroups=False):
-        data = [
+    def get_workspaces_from_network(self):
+        return [
             {'id': 14,
              'name': 'User Service',
              'description': '',
@@ -218,6 +218,10 @@ class BackendAPI:
                  }
              ]}
         ]
+
+
+    def get_workspaces(self, enrich_with_apigroups=False):
+        data = self.get_workspaces_from_network()
         if self._filter:
             data = [x for x in data if x['name'] in self.workspaces.keys()]
         if enrich_with_apigroups:
