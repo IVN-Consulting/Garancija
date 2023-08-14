@@ -273,9 +273,10 @@ class Syncer:
 
     def sync(self):
         workspaces = self.backend.get_workspaces(enrich_with_apigroups=True)
+        #import pdb
+        #pdb.set_trace()
         for workspace in workspaces:
             for api_group in workspace['apigroups']:
-                return workspaces
                 self.frontend_api.sync(
                     xano_instance=self.backend.name,
                     xano_workspace=workspace['name'],
