@@ -219,7 +219,6 @@ class BackendAPI:
              ]}
         ]
 
-
     def get_workspaces(self, enrich_with_apigroups=False):
         data = self.get_workspaces_from_network()
         if self._filter:
@@ -228,8 +227,8 @@ class BackendAPI:
             self.enrich_with_apigroups(workspaces=data)
         return data
 
-    def enrich_with_apigroups(self, workspaces):
-        test_data = {
+    def get_apigroups_from_network(self):
+        return {
             'User Service': [{
                 'id': 280,
                 'name': 'Authentication',
@@ -262,6 +261,9 @@ class BackendAPI:
                 'branch': 'v1'
             }]
         }
+
+    def enrich_with_apigroups(self, workspaces):
+        test_data = self.get_apigroups_from_network()
         for workspace in workspaces:
             data = test_data[workspace['name']]
             if self._filter:
