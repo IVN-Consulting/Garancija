@@ -11,7 +11,8 @@ def f():
     return result
 
 
-def stest_f_with_spy(mocker):
+def test_f_with_spy(mocker):
+    import tests
     increment_spy = mocker.spy(tests, 'increment')
 
     f()
