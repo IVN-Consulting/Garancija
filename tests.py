@@ -106,19 +106,26 @@ def test_prvi(mocker):
 
 
 
-def test_get_workspaces():
+def test_get_workspaces(mocker):
 
         #Given
         group_workspaces = {
         'User Service': ['Authentication', 'User Management'],
         'Shop Service': ['Shop API'],
-        'Warranty Service': ['Warranty API']
         }
+
+        get_wsfn_mock = mocker.patch.object(BackendAPI, "get_workspaces_from_network")
+        get_wsfn_mock.return_value =[
+            {'name': 'a'},
+            {'name': 'b'},
+            {'name': 'c'},
+            {'name': 'd'},
+            {'name': 'e'},
+        ]
         backend = BackendAPI(_type="group", workspaces=group_workspaces, _filter=True)
         #When
-        backend.get_workspaces(enrich_with_apigroups=False)
         filtered_workspaces = backend.get_workspaces(enrich_with_apigroups=False)
-        expected_workspaces = ["User Service", "Shop Service", "Warranty Service"]
+        expected_workspaces = ["a", "b"]
         #Then
         print(group_workspaces)
         assert [ws["name"] for ws in filtered_workspaces] == expected_workspaces
