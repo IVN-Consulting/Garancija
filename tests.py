@@ -104,9 +104,6 @@ def test_prvi(mocker):
     #assert call4 in frontend_sync_mock.call_args_list
 
 
-
-
-
 def test_get_workspaces(mocker):
 
         #Given
