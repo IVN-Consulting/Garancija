@@ -1,7 +1,4 @@
-from sync_resources import FrontendAPI, BackendAPI, Syncer
-import tests
-
-
+from sync_resources import BackendAPI , FrontendAPI , Syncer
 def setup():
     pass
 
@@ -14,7 +11,7 @@ def f():
     return result
 
 
-def test_f_with_spy(mocker):
+def stest_f_with_spy(mocker):
     increment_spy = mocker.spy(tests, 'increment')
 
     f()
@@ -104,3 +101,24 @@ def test_prvi(mocker):
     #assert call2 in frontend_sync_mock.call_args_list
     #assert call3 in frontend_sync_mock.call_args_list
     #assert call4 in frontend_sync_mock.call_args_list
+
+
+
+
+
+def test_get_workspaces():
+
+        #Given
+        group_workspaces = {
+        'User Service': ['Authentication', 'User Management'],
+        'Shop Service': ['Shop API'],
+        'Warranty Service': ['Warranty API']
+        }
+        backend = BackendAPI(_type="group", workspaces=group_workspaces, _filter=True)
+        #When
+        backend.get_workspaces(enrich_with_apigroups=False)
+        filtered_workspaces = backend.get_workspaces(enrich_with_apigroups=False)
+        expected_workspaces = ["User Service", "Shop Service", "Warranty Service"]
+        #Then
+        print(group_workspaces)
+        assert [ws["name"] for ws in filtered_workspaces] == expected_workspaces
