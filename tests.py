@@ -110,8 +110,8 @@ def test_get_workspaces(mocker):
 
         #Given
         group_workspaces = {
-        'User Service': ['Authentication', 'User Management'],
-        'Shop Service': ['Shop API'],
+        'a': ['Authentication', 'User Management'],
+        'b': ['Shop API'],
         }
 
         get_wsfn_mock = mocker.patch.object(BackendAPI, "get_workspaces_from_network")
