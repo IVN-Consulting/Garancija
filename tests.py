@@ -127,3 +127,33 @@ def test_get_workspaces(mocker):
         #Then
         print(group_workspaces)
         assert [ws["name"] for ws in filtered_workspaces] == expected_workspaces
+
+def test_apigroups_filter(mocker):
+
+    group_workspaces = {
+        'User Service': ['a', 'b'],
+        'Shop Service': ['c'],
+        'Warranty Service': ['d']
+    }
+    get_wsfn_mock = mocker.patch.object(BackendAPI, "get_workspaces_from_network")
+    get_wsfn_mock.return_value = [
+        {'name': 'User Service'},
+        {'name': 'Shop Service'},
+        {'name': 'Warranty Service'},
+    ]
+    get_api_mock = mocker.patch.object(BackendAPI , "get_apigroups_from_network")
+    get_api_mock.return_value = {
+            'User Service': [{'name': 'a'}, {'name': 'b'}],
+            'Shop Service': [{'name': 'c'}],
+            'Warranty Service': [{'name': 'd'}]
+        }
+
+    backend = BackendAPI(_type="group", workspaces=group_workspaces , _filter=True)
+    filtered_api = backend.get_workspaces(enrich_with_apigroups=True)
+    expected_api = [
+        {'name': 'User Service', 'apigroups': [{'name': 'a'}, {'name': 'b'}]},
+        {'name': 'Shop Service', 'apigroups': [{'name': 'c'}]},
+        {'name': 'Warranty Service', 'apigroups': [{'name': 'd'}]}
+                                        ]
+    assert filtered_api == expected_api
+
