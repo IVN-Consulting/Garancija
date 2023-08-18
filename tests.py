@@ -178,6 +178,7 @@ def test_apigroups_filter(mocker):
 def test_star_filter(mocker):
     group_workspaces = {
         'Star Service': ["*"],
+        'Bad Service': ["*"]
     }
 
     get_wsfn_mock = mocker.patch.object(BackendAPI, "get_workspaces_from_network")
@@ -200,6 +201,15 @@ def test_star_filter(mocker):
             {'name': 'APIGroup1'},
             {'name': 'APIGroup2'}
         ]
+    } , {
+        'name': 'Bad Service',
+        'apigroups': [
+            {'name': 'Bad APIGroup'},
+        ]
     }]
 
     assert actual_apigroups == expected_apigroups
+    print("OVO JE ACTUAL")
+    print(actual_apigroups)
+    print("OVO JE EXP")
+    print(expected_apigroups)
