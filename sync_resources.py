@@ -269,7 +269,8 @@ class BackendAPI:
             if self._filter:
                 #data = [x for x in data if x['name'] in self.workspaces.get(workspace['name'], [])]
                 #star_filter
-                [x for x in data if x in self.workspaces.get(workspace['name'], []) == '*']
+                #[x for x in data if x in self.workspaces.get(workspace['name'], []) == '*']
+                data = [x for x in data if "*" in self.workspaces.get(workspace['name'], [])]
             workspace['apigroups'] = data
 
 

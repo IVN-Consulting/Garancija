@@ -201,11 +201,6 @@ def test_star_filter(mocker):
             {'name': 'APIGroup1'},
             {'name': 'APIGroup2'}
         ]
-    } , {
-        'name': 'Bad Service',
-        'apigroups': [
-            {'name': 'Bad APIGroup'},
-        ]
     }]
 
     assert actual_apigroups == expected_apigroups
