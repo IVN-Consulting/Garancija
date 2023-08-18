@@ -174,3 +174,32 @@ def test_apigroups_filter(mocker):
                           ]
 
     assert expected_apigroups == enriched_apigroups
+
+def test_star_filter(mocker):
+    group_workspaces = {
+        'Star Service': ["*"],
+    }
+
+    get_wsfn_mock = mocker.patch.object(BackendAPI, "get_workspaces_from_network")
+    get_wsfn_mock.return_value = [
+        {'name': 'Star Service'},
+        {'name': 'Bad Service'},
+    ]
+    get_agfn_mock = mocker.patch.object(BackendAPI, "get_apigroups_from_network")
+    get_agfn_mock.return_value = {
+        'Star Service': [{'name': 'APIGroup1'}, {'name': 'APIGroup2'}],
+        'Bad Service': [{'name': 'Bad APIGroup'}],
+    }
+
+    backend = BackendAPI(_type="group", workspaces=group_workspaces, _filter=True)
+    actual_apigroups = backend.get_workspaces(enrich_with_apigroups=True)
+    print(actual_apigroups)
+    expected_apigroups = [{
+        'name': 'Star Service',
+        'apigroups': [
+            {'name': 'APIGroup1'},
+            {'name': 'APIGroup2'}
+        ]
+    }]
+
+    assert actual_apigroups == expected_apigroups
