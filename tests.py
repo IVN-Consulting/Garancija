@@ -43,7 +43,7 @@ def test_f_values(mocker):
     assert actual_result == 123
 
 
-def test_prvi(mocker):
+def test_syncer_sync(mocker):
     # Given
     group_workspaces = {
         'User Service': ['Authentication', 'User Management'],
