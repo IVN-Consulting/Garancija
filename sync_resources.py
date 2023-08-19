@@ -4,15 +4,42 @@ class FrontendAPI:
         self.resources = self.list_resources()
         self.environments = self.list_environments()
 
-    def list_resources(self):
+    def list_resources(self):  # from network, mock this
         # return test resources from retool
-        return [{'id': '1', 'type': 'restapi', 'display_name': 'Garancija'}, {'id': '2', 'type': 'restapi', 'display_name': 'User'}, {'id': '2', 'type': 'restapi', 'display_name': 'Shop'}]
+        return [
+            {
+                'id': '1',
+                'type': 'restapi',
+                'display_name': 'Garancija'
+            }, {
+                'id': '2',
+                'type': 'restapi',
+                'display_name': 'User'
+            }, {
+                'id': '3',
+                'type': 'restapi',
+                'display_name': 'Shop'
+            }
+        ]
+
     def get_retool_resource_name(self, xano_instance, xano_workspace, backendgroup, xano_canonical):
         return f"{xano_instance} / {xano_workspace} / {backendgroup} ({xano_canonical})"
 
-    def list_environments(self):
+    def list_environments(self):  # from network, but do not mock this
         # return test environments from retool
-        return [{'id': '1', 'name': 'staging', 'color': '#E9AB11', 'default': False}, {'id': '2', 'name': 'production', 'color': '#3C92DC', 'default': True}]
+        return [
+            {
+                'id': '1',
+                'name': 'staging',
+                'color': '#E9AB11',
+                'default': False
+            }, {
+                'id': '2',
+                'name': 'production',
+                'color': '#3C92DC',
+                'default': True
+            }
+        ]
 
     def get_environment(self, environment_name):
         return [x for x in self.environments if x['name'] == environment_name][0]
