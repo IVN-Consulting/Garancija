@@ -221,6 +221,7 @@ def test_sync_calls_sync_new_resource_once(mocker):
     #Given
     frontend_api = FrontendAPI()
     mock_sync_new_resource = mocker.patch.object(FrontendAPI, 'sync_new_resource')
+    mock_sync_existing_resource = mocker.patch.object(FrontendAPI, 'sync_existing_resource')
     mock_list_resource = mocker.patch.object(FrontendAPI, 'list_resources')
     mock_list_resource.return_value=[]
 
@@ -234,40 +235,46 @@ def test_sync_calls_sync_new_resource_once(mocker):
     )
 
     #Then
-    frontend_api.sync_new_resource.assert_called_once_with(
+    mock_sync_new_resource.assert_called_once_with(
         xano_instance="asd",
         xano_workspace="asd",
         backendgroup="asd",
         xano_canonical="asd",
         xano_host="asd"
     )
+    mock_sync_existing_resource.assert_not_called()
+
 
 def test_sync_calls_sync_existing_resource(mocker):
     # Given
-    frontend_api = FrontendAPI()
-    mock_sync_existing_resource = mocker.patch.object(FrontendAPI, 'sync_existing_resource')
-    mock_list_resources = mocker.patch.object(FrontendAPI, 'list_resources')
-    mock_list_resources.return_value = [
-            {
-                'id': '1',
-                'type': 'restapi',
-                'display_name': 'Garancija'
-            }
-        ]
 
+    mock_sync_existing_resource = mocker.patch.object(FrontendAPI, 'sync_existing_resource')
+    mock_sync_new_resource = mocker.patch.object(FrontendAPI, 'sync_new_resource')
+    mock_list_resources = mocker.patch.object(FrontendAPI, 'list_resources')
+    resource = {
+        'id': '1',
+        'type': 'restapi',
+        'display_name': '(ASD)'
+    }
+    mock_list_resources.return_value = [
+        resource
+    ]
+    frontend_api = FrontendAPI()
     #When
     frontend_api.sync(
         xano_instance="asd",
         xano_workspace="asd",
         backendgroup="asd",
-        xano_canonical="Garancija",
+        xano_canonical="ASD",
         xano_host="asd"
     )
     #Then
-    frontend_api.sync_existing_resource.assert_called_once_with(
+    mock_sync_existing_resource.assert_called_once_with(
+        resource=resource,
         xano_instance="asd",
         xano_workspace="asd",
         backendgroup="asd",
-        xano_canonical="Garancija",
+        xano_canonical="ASD",
         xano_host="asd"
     )
+    mock_sync_new_resource.assert_not_called()

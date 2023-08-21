@@ -143,7 +143,6 @@ class FrontendAPI:
                 xano_canonical=xano_canonical,
                 xano_host=xano_host
             )
-            #raise Exception("Run only for a single resource")
         else:
             self.sync_new_resource(
                 xano_instance=xano_instance,
@@ -152,7 +151,6 @@ class FrontendAPI:
                 xano_canonical=xano_canonical,
                 xano_host=xano_host
             )
-            #raise Exception("Run only for a single resource")
 
         print("=====================================")
         print("=====================================")
