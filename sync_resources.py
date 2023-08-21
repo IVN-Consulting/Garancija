@@ -123,6 +123,7 @@ class FrontendAPI:
     def sync(self, xano_instance, xano_workspace, backendgroup, xano_canonical, xano_host):
         existing_resource = None
         for resource in self.resources:
+            #(Garancija)
             if f"({xano_canonical})" in resource['display_name']:
                 existing_resource = resource
 
@@ -294,14 +295,6 @@ class BackendAPI:
         for workspace in workspaces:
             data = test_data[workspace['name']]
             if self._filter:
-                """data = [x for x in data if x['name'] in self.workspaces.get(workspace['name'], [])]
-                star_filter
-                [x for x in data if x in self.workspaces.get(workspace['name'], []) == '*']
-                data = [x for x in data if "*" in self.workspaces.get(workspace['name'], [])]
-                workspace['apigroups'] = data
-
-                data = [x for x in data if "*" in self.workspaces.get(workspace['name'], [])]
-                workspace['apigroups'] = data"""
                 if '*' in self.workspaces.get(workspace['name'], []):
                     workspace['apigroups'] = data
                 else:

@@ -167,6 +167,7 @@ def test_apigroups_filter(mocker):
     """
 
 
+    backend =     frontend = FrontendAPI(_type="myhome")
     backend = BackendAPI(_type="group", workspaces=group_workspaces, _filter=True)
     enriched_apigroups = backend.get_workspaces(enrich_with_apigroups=True)
     print(enriched_apigroups)
@@ -212,7 +213,49 @@ def test_star_filter(mocker):
     ]
 
     assert actual_apigroups == expected_apigroups
-    print("OVO JE ACTUAL")
-    print(actual_apigroups)
-    print("OVO JE EXP")
-    print(expected_apigroups)
+
+def test_frontend_sync_calls_sync_existing(mocker):
+
+    list_resources_mock = mocker.patch.object(FrontendAPI, 'list_resources')
+    list_resources_mock.return_value = [
+            {
+                'id': '1',
+                'type': 'restapi',
+                'display_name': '(warranty-api)'
+            }, {
+                'id': '2',
+                'type': 'restapi',
+                'display_name': '(user-management)'
+            }, {
+                'id': '3',
+                'type': 'restapi',
+                'display_name': '(shop-api)'
+            }
+        ]
+
+
+    frontend = FrontendAPI(_type='mywork')
+    sync_existing_mock = mocker.patch.object(frontend, 'sync_existing_resource')
+    #retool_name_mock = mocker.patch.object(frontend, 'get_retool_resource_name')
+    #retool_name_mock.return_value = "GROUP / Shop Service / Shop API (user-management)"
+
+
+    frontend.sync(
+        xano_instance="GROUP",
+        xano_workspace="User Service",
+        backendgroup="User Management",
+        xano_canonical="warranty-api",
+        xano_host="https://ivn-consulting.com/group"
+    )
+
+
+    #assert sync_existing_mock.call_count == 1
+    frontend.sync_existing_resource.assert_called_once()
+    """_with(
+        resource=
+        xano_instance=
+        xano_workspace=
+        backendgroup=
+        xano_canonical=
+        xano_host=
+    )"""
