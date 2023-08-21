@@ -44,6 +44,15 @@ class FrontendAPI:
     def get_environment(self, environment_name):
         return [x for x in self.environments if x['name'] == environment_name][0]
 
+    def update_existing_configuration(self):
+        # ovde se kao nesto desava, ovo treba da se mokuje i assertuje
+
+        pass
+
+    def sync_new_configuration(self):
+        # ovde se kao nesto desava, ovo treba da se mokuje i assertuje
+        pass
+
     def sync_single_configuration(self, resource, configurations, environment_name, base_url, headers):
         conf = [x for x in configurations if x['environment']['name'] == environment_name]
 
@@ -51,24 +60,49 @@ class FrontendAPI:
             conf = conf[0]
             # Make sure that configuration is correct, and if it's not update it
             try:
-                assert conf['options']['base_url'] == base_url
 
-                for header in headers:
-                    assert header in conf['options']['headers']
+                # THIS IS NOT A TEST
+                expected_headers = headers
+                actual_headers = conf['options']['headers']
 
-                for header in conf['options']['headers']:
-                    assert header in headers
+                for header in expected_headers:
+                    assert header in actual_headers
+
+                for header in actual_headers:
+                    assert header in expected_headers
 
                 print(f"Skipped {environment_name}")
             except AssertionError:
                 # Update existing configuration
+                self.update_existing_configuration()
                 print(f"Updated {environment_name}")
         else:
             # create new configuration
+            self.sync_new_configuration()
             print(f"Created {environment_name}")
 
+    def get_configurations_from_network(self):  # ne morate da mokujete ovo
+        return [
+            {
+                "environment": {
+                    "name": "staging",
+                    "options": {
+                        "headers": [["x-data-source", "test"], ["content-type", "application/json"]],
+                    }
+                }
+            },
+            {
+                "environment": {
+                    "name": "production",
+                    "options": {
+                        "headers": [["x-data-source", "live"], ["content-type", "application/json"]],
+                    }
+                }
+            }
+        ]
+
     def sync_configurations(self, resource, xano_canonical, xano_host):
-        configurations = [] # todoasd add configurations
+        configurations = self.get_configurations_from_network()
 
         self.sync_single_configuration(
             resource=resource,
@@ -92,7 +126,9 @@ class FrontendAPI:
             backendgroup=backendgroup,
             xano_canonical=xano_canonical,
         )
-        resource = {}
+        resource = {
+
+        }
         print("Created")
 
         self.sync_configurations(
@@ -100,6 +136,9 @@ class FrontendAPI:
             xano_canonical,
             xano_host
         )
+
+    def sync_resource_name(self, resource):
+        pass
 
     def sync_existing_resource(self, resource, xano_instance, xano_workspace, backendgroup, xano_canonical, xano_host):
 
@@ -111,8 +150,9 @@ class FrontendAPI:
         )
         if resource['display_name'] != name:
             print(f"Updated name")
+            self.sync_resource_name(resource)
         else:
-            print(f"Skip name update")
+            pass
 
         self.sync_configurations(
             resource,
