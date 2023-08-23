@@ -1,4 +1,5 @@
 from sync_resources import BackendAPI , FrontendAPI , Syncer
+import pytest
 def setup():
     pass
 
@@ -278,3 +279,51 @@ def test_sync_calls_sync_existing_resource(mocker):
         xano_host="asd"
     )
     mock_sync_new_resource.assert_not_called()
+
+def test_sync_single_configuration_new(mocker):
+    #Given
+    frontend_api = FrontendAPI()
+    mock_update_existing_configuration = mocker.patch.object(frontend_api, "update_existing_configuration")
+    mock_sync_new_configuration = mocker.patch.object(frontend_api, "sync_new_configuration")
+    resource = {}
+    configurations = frontend_api.get_configurations_from_network()
+    environment_name = "TEST"
+    base_url = "http://asd.com"
+    headers = [["test", "test"], ["test", "test"]]
+    #When
+    frontend_api.sync_single_configuration(resource, configurations, environment_name, base_url, headers)
+    #Then
+    mock_update_existing_configuration.assert_not_called()
+    mock_sync_new_configuration.assert_called_once()
+
+def test_sync_single_configuration_existing(mocker):
+    #Given
+    frontend_api = FrontendAPI()
+    mock_update_existing_configuration = mocker.patch.object(frontend_api, "update_existing_configuration")
+    mock_sync_new_configuration = mocker.patch.object(frontend_api, "sync_new_configuration")
+    resource = {}
+    configurations = frontend_api.get_configurations_from_network()
+    environment_name = "staging"
+    base_url = "http://asd.com"
+    headers = [["x-data-source", "test"], ["content-type", "application/json"]]
+    #When
+    frontend_api.sync_single_configuration(resource, configurations, environment_name, base_url, headers)
+    #Then
+    mock_update_existing_configuration.assert_called_once()
+    mock_sync_new_configuration.assert_not_called()
+
+
+
+def test_sync_single_configuration_existing_assertion_error(mocker):
+    #Given
+    frontend_api = FrontendAPI()
+    mocker.patch.object(frontend_api, "update_existing_configuration")
+    mocker.patch.object(frontend_api, "sync_new_configuration")
+    resource = {}
+    configurations = frontend_api.get_configurations_from_network()
+    environment_name = "staging"
+    base_url = "http://asd.com"
+    headers = [["x-data-source", "BAD"], ["content-type", "application/json"]]
+    #When/Then?
+    with pytest.raises(AssertionError):
+        frontend_api.sync_single_configuration(resource, configurations, environment_name, base_url, headers)
