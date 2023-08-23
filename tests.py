@@ -296,7 +296,7 @@ def test_sync_single_configuration_new(mocker):
     mock_update_existing_configuration.assert_not_called()
     mock_sync_new_configuration.assert_called_once()
 
-def test_sync_single_configuration_existing(mocker):
+def test_sync_single_configuration_no_changes(mocker):
     #Given
     frontend_api = FrontendAPI()
     mock_update_existing_configuration = mocker.patch.object(frontend_api, "update_existing_configuration")
@@ -309,21 +309,36 @@ def test_sync_single_configuration_existing(mocker):
     #When
     frontend_api.sync_single_configuration(resource, configurations, environment_name, base_url, headers)
     #Then
-    mock_update_existing_configuration.assert_called_once()
+    mock_update_existing_configuration.assert_not_called()
     mock_sync_new_configuration.assert_not_called()
 
 
 
 def test_sync_single_configuration_existing_assertion_error(mocker):
+
     #Given
     frontend_api = FrontendAPI()
-    mocker.patch.object(frontend_api, "update_existing_configuration")
-    mocker.patch.object(frontend_api, "sync_new_configuration")
+
+    with pytest.raises(Exception):
+        frontend_api.test_method_raises_exception(x=3)
+
+    try:
+        frontend_api.test_method_raises_exception(x=6)
+    except Exception:
+        assert False, "Desila se greska a nije trebalo"
+
+    mock_update_existing_configuration = mocker.patch.object(frontend_api, "update_existing_configuration")
+    mock_sync_new_configuration = mocker.patch.object(frontend_api, "sync_new_configuration")
+
     resource = {}
     configurations = frontend_api.get_configurations_from_network()
     environment_name = "staging"
     base_url = "http://asd.com"
     headers = [["x-data-source", "BAD"], ["content-type", "application/json"]]
-    #When/Then?
-    with pytest.raises(AssertionError):
-        frontend_api.sync_single_configuration(resource, configurations, environment_name, base_url, headers)
+
+    #When/Then?    #with pytest.raises(AssertionError):
+
+    frontend_api.sync_single_configuration(resource, configurations, environment_name, base_url, headers)
+
+    mock_update_existing_configuration.assert_called_once()
+    mock_sync_new_configuration.assert_not_called()

@@ -54,7 +54,7 @@ class FrontendAPI:
         pass
 
     def sync_single_configuration(self, resource, configurations, environment_name, base_url, headers):
-        conf = [x for x in configurations if x['environment']['name'] == environment_name]
+        conf = [x['environment'] for x in configurations if x['environment']['name'] == environment_name]
 
         if conf:
             conf = conf[0]
@@ -80,6 +80,12 @@ class FrontendAPI:
             # create new configuration
             self.sync_new_configuration()
             print(f"Created {environment_name}")
+
+    def test_method_raises_exception(self, x):
+        if x < 5:
+            raise Exception("Manje od pet")
+        else:
+            return x
 
     def get_configurations_from_network(self):  # ne morate da mokujete ovo
         return [
