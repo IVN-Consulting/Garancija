@@ -372,7 +372,7 @@ class Syncer:
                     xano_canonical=api_group['canonical'],
                     xano_host=self.backend.host,
                 )
-
+                return workspaces
 
 if __name__ == "__main__":
 

@@ -21,4 +21,6 @@ from garancija import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("rest_framework_adresa", views.MyFirstEndpoint.as_view()),
+    path("buda", views.Buda.as_view()),
+    path("syncer", views.SyncerEndpoint.as_view()),
 ]
