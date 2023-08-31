@@ -1,6 +1,7 @@
 ## Configuration
 
-### Building project
+### Building project - 
+Needed to install new python packages
 - `docker compose build app`
 
 ### Running project
@@ -12,8 +13,15 @@
 - `docker compose migrate` - run if needed
 - `python manage.py runserver 0.0.0.0:8000`
 
+### docker commands
+- `docker compose ps`
+- `docker compose exec app bash`
+- `docker compose logs -f app`
+- `docker compose logs -f --tail=100 app`
 
-### Useful commands
-- `docker compose makemigrations`
-- `docker compose migrate`
-- `docker compose showmigrations`
+### django commands
+- `python manage.py runserver 0.0.0.0:8000`
+- `python manage.py shell_plus`
+- `python manage.py makemigrations`
+- `python manage.py migrate`
+- `python manage.py showmigrations`
