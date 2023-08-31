@@ -25,6 +25,8 @@ services:
     tty: true
     depends_on:
       - db
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
 
   pgadmin:
     image: dpage/pgadmin4
