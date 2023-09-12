@@ -12,16 +12,12 @@ class WarrantyView(views.APIView):
             data.append({
                 'id': warranty.id,
                 'product_name': warranty.product_name,
-                'shop': [
-                    {
-                        'shop_name': warranty.shop.name,
-                        'shop_address': warranty.shop.address,
-                        'salesperson': warranty.salesperson.name,
-
-                    }
-                ],
+                'shop': {
+                    'shop_name': warranty.salesperson.shop.name,
+                    'shop_address': warranty.salesperson.shop.address,
+                    'salesperson': warranty.salesperson.name,
+                },
                 'start_date': warranty.start_date,
-                'end_date': warranty.end_date,
-                'active': warranty.active
+                'end_date': warranty.end_date
             })
         return response.Response(data)
