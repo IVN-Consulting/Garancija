@@ -1,6 +1,6 @@
 from rest_framework import views, response, generics
 from garancija.models import Warranty, Employee, Shop
-from garancija.serializers import WarrantySerializer
+from garancija import serializers
 
 class Healthcheck(views.APIView):
     def get(self, request):
@@ -26,4 +26,29 @@ class WarrantyViewBuda(views.APIView):
 
 class WarrantyView(generics.ListCreateAPIView):
     queryset = Warranty.objects.all()
-    serializer_class = WarrantySerializer
+    serializer_class = serializers.WarrantySerializer
+
+
+class ShopListCreateView(generics.ListCreateAPIView):
+    queryset = Shop.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return serializers.ListShopSerializer
+        elif self.request.method == 'POST':
+            return serializers.CreateShopSerializer
+        else:
+            return super().get_serializer_class()
+
+    def post(self, request):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+        shop = Shop.objects.create(
+            name=validated_data['name'],
+            email=validated_data['email'],
+            address=validated_data['address'],
+        )
+        list_serializer = serializers.ListShopSerializer(instance=shop)
+        return response.Response(list_serializer.data)

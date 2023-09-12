@@ -19,3 +19,14 @@ class WarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
         fields = '__all__'
+
+class ListShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['id', 'name']
+
+
+class CreateShopSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=256, required=True)
+    address = serializers.CharField(max_length=256, required=True)
+    email = serializers.EmailField(required=True)
