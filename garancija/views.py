@@ -1,11 +1,12 @@
-from rest_framework import views, response
-from .models import Warranty, Employee, Shop
+from rest_framework import views, response, generics
+from garancija.models import Warranty, Employee, Shop
+from garancija.serializers import WarrantySerializer
 
 class Healthcheck(views.APIView):
     def get(self, request):
         return response.Response("OK")
 
-class WarrantyView(views.APIView):
+class WarrantyViewBuda(views.APIView):
     def get(self, request):
         data = []
         for warranty in Warranty.objects.all():
@@ -21,3 +22,8 @@ class WarrantyView(views.APIView):
                 'end_date': warranty.end_date
             })
         return response.Response(data)
+
+
+class WarrantyView(generics.ListCreateAPIView):
+    queryset = Warranty.objects.all()
+    serializer_class = WarrantySerializer
