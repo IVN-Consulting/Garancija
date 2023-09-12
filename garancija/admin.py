@@ -1,5 +1,6 @@
 from django.contrib import admin
-from garancija.models import Shop, Employee
+from garancija.models import Shop, Employee, Warranty
+
 
 
 
@@ -14,3 +15,9 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Employee, EmployeeAdmin)
+
+class WarrantyAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Warranty, WarrantyAdmin)

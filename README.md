@@ -11,7 +11,7 @@ Needed to install new python packages
 - `docker compose ps` confirm that all the containers are up
 - `docker compose exec app bash` - connect to the `app` container
 - `docker compose migrate` - run if needed
-- `python manage.py runserver 0.0.0.0:8000`
+- `python manage.py runserver python manage.py shell_p0.0.0.0:8000`
 
 ### docker commands
 - `docker compose ps`
