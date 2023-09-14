@@ -1,10 +1,12 @@
-from rest_framework import views, response, generics
+from rest_framework import views, response, generics, exceptions
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
+
 
 class Healthcheck(views.APIView):
     def get(self, request):
         return response.Response("OK")
+
 
 class WarrantyViewBuda(views.APIView):
     def get(self, request):
@@ -58,5 +60,5 @@ class ShopRetrieveView(generics.RetrieveAPIView):
     serializer_class = serializers.RetriveShopSerializer #povezivanje sa serializerom
 
     def get_object(self):
-        pk = self.kwargs.get('pk') #kwargs je recnik svih prosledjenih keyword argumenata i ovde dohvatamo vrednost od pk
+        pk = self.kwargs.get('pk')
         return Shop.objects.get(pk=pk)
