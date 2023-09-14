@@ -30,3 +30,8 @@ class CreateShopSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=256, required=True)
     address = serializers.CharField(max_length=256, required=True)
     email = serializers.EmailField(required=True)
+
+class RetriveShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['id', 'name', 'email']

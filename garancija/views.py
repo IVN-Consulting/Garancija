@@ -52,3 +52,11 @@ class ShopListCreateView(generics.ListCreateAPIView):
         )
         list_serializer = serializers.ListShopSerializer(instance=shop)
         return response.Response(list_serializer.data)
+
+class ShopRetrieveView(generics.RetrieveAPIView):
+    queryset = Shop.objects.all() #dao sam mu sve objekte shopa
+    serializer_class = serializers.RetriveShopSerializer #povezivanje sa serializerom
+
+    def get_object(self):
+        pk = self.kwargs.get('pk') #kwargs je recnik svih prosledjenih keyword argumenata i ovde dohvatamo vrednost od pk
+        return Shop.objects.get(pk=pk)
