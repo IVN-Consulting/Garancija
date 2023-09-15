@@ -55,10 +55,19 @@ class ShopListCreateView(generics.ListCreateAPIView):
         list_serializer = serializers.ListShopSerializer(instance=shop)
         return response.Response(list_serializer.data)
 
+
 class ShopRetrieveView(generics.RetrieveAPIView):
-    queryset = Shop.objects.all() #dao sam mu sve objekte shopa
-    serializer_class = serializers.RetriveShopSerializer #povezivanje sa serializerom
+    queryset = Shop.objects.all()
+    serializer_class = serializers.RetriveShopSerializer
 
     def get_object(self):
         pk = self.kwargs.get('pk')
         return Shop.objects.get(pk=pk)
+
+
+class EmployeesByShopView(generics.ListAPIView):
+    serializer_class = serializers.EmployeeSerializer
+
+    def get_queryset(self):
+        shop_id= self.kwargs.get('id')
+        return  Employee.objects.filter(shop=shop_id)
