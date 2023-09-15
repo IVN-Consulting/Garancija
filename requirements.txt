@@ -5,10 +5,12 @@ django-shell-plus==1.1.7
 djangorestframework==3.14.0
 exceptiongroup==1.1.2
 iniconfig==2.0.0
+model-bakery==1.15.0
 packaging==23.1
 pluggy==1.2.0
 psycopg2==2.9.7
 pytest==7.4.0
+pytest-django==4.5.2
 pytest-mock==3.11.1
 pytz==2023.3
 sqlparse==0.4.4

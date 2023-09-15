@@ -61,13 +61,21 @@ class ShopRetrieveView(generics.RetrieveAPIView):
     serializer_class = serializers.RetriveShopSerializer
 
     def get_object(self):
-        pk = self.kwargs.get('pk')
-        return Shop.objects.get(pk=pk)
+        try:
+            pk = self.kwargs.get('pk')
+            return Shop.objects.get(pk=pk)
+        except Shop.DoesNotExist:
+            raise exceptions.NotFound
 
 
 class EmployeesByShopView(generics.ListAPIView):
     serializer_class = serializers.EmployeeSerializer
 
     def get_queryset(self):
-        shop_id= self.kwargs.get('id')
-        return  Employee.objects.filter(shop=shop_id)
+        try:
+            shop_id = self.kwargs.get('id')
+            shop = Shop.objects.get(id=shop_id)
+            return Employee.objects.filter(shop=shop)
+        except Shop.DoesNotExist:
+            raise exceptions.NotFound
+
