@@ -26,7 +26,7 @@ def test_get_existing_shop():
 @pytest.mark.django_db
 def test_get_employees_by_shop():
     shop = baker.make(Shop)
-    employee = baker.make(Employee, shop=shop, name= 'anyone')
+    employee = baker.make(Employee, shop=shop)
     employee2 = baker.make(Employee)
 
     url = reverse("shop-employees", args=[shop.id])
@@ -35,3 +35,8 @@ def test_get_employees_by_shop():
     data = response.json()
     assert employee.id in [x['id'] for x in data]
     assert not employee2.id in [x['id'] for x in data]
+
+    url = reverse("shop-employees", args=['14'])
+    response = client.get(url)
+
+    assert response.status_code == 404
