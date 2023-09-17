@@ -39,4 +39,6 @@ def test_get_employees_by_shop():
     url = reverse("shop-employees", args=['14'])
     response = client.get(url)
 
+    data=response.json()
     assert response.status_code == 404
+    assert data['detail'] == 'Not found.'
