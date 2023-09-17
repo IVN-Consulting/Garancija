@@ -53,9 +53,17 @@ def test_warranty_view():
 
     url = reverse('generics-warranty')
     response = client.get(url)
-    assert response.status_code == 200
-
     data= response.json()
+
+    assert response.status_code == 200
+    assert warranty.salesperson.shop == shop
+    for x in data:
+        data_id = x['id']
+        data_product_name = x['product_name']
+    assert  warranty.id == data_id
     assert salesperson.id in [x['salesperson']['id'] for x in data]
+    assert warranty.salesperson.id in [x['salesperson']['id'] for x in data]
     assert shop.id in [x['salesperson']['shop']['id'] for x in data]
+    assert salesperson.shop.id in [x['salesperson']['shop']['id'] for x in data]
+    assert warranty.product_name == data_product_name
     assert not bad_salesperson.id in [x['salesperson']['id'] for x in data]
