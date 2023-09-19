@@ -1,7 +1,13 @@
 from django.urls import path
 from garancija import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+router.register(r'shops', views.ShopViewSet, basename="shops")
 
 urlpatterns = [
+    *router.urls,
     path('health', views.Healthcheck.as_view(), name="healthcheck"),
     path('generics/warranty', views.WarrantyView.as_view(), name="generics-warranty"),
     path('shop', views.ShopListCreateView.as_view(), name="shop-list"),

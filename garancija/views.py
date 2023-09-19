@@ -1,4 +1,4 @@
-from rest_framework import views, response, generics, exceptions
+from rest_framework import views, response, generics, exceptions, viewsets
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
 
@@ -79,3 +79,8 @@ class EmployeesByShopView(generics.ListAPIView):
         except Shop.DoesNotExist:
             raise exceptions.NotFound
 
+
+
+class ShopViewSet(viewsets.ModelViewSet):
+    queryset = Shop.objects.all()
+    serializer_class = serializers.ShopSerializer
