@@ -9,7 +9,7 @@ client = APIClient()
 
 
 @pytest.mark.django_db
-def test_get_employees_by_shop():
+def test_list_employees():
     shop = baker.make(Shop)
     employee = baker.make(Employee, shop=shop)
     employee2 = baker.make(Employee)
@@ -25,10 +25,30 @@ def test_get_employees_by_shop():
 
 
 @pytest.mark.django_db
-def test_get_employees_for_non_existing_shop():
+def test_list_employees_for_non_existing_shop():
     url = reverse("shop-employees", args=['14'])
     response = client.get(url)
 
     data=response.json()
     assert response.status_code == 404
     assert data['detail'] == 'Not found.'
+
+
+@pytest.mark.django_db
+def test_create_employee():
+    pass
+
+
+@pytest.mark.django_db
+def test_retrieve_employee():
+    pass
+
+
+@pytest.mark.django_db
+def test_edit_employee():
+    pass
+
+
+@pytest.mark.django_db
+def test_delete_employee():
+    pass
