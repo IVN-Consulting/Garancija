@@ -23,6 +23,8 @@ def test_get_existing_shop():
     assert data['id'] == shop.id
     assert data['name'] == shop.name
     assert data['email'] == shop.email
+
+
 @pytest.mark.django_db
 def test_get_employees_by_shop():
     shop = baker.make(Shop)
@@ -34,10 +36,13 @@ def test_get_employees_by_shop():
     assert response.status_code == 200
 
     data = response.json()
-    data_emp_id = [x['id'] for x in data]
+    data_emp_id = [int(x['id']) for x in data]
     assert employee.id in data_emp_id
     assert not employee2.id in data_emp_id
 
+
+@pytest.mark.django_db
+def test_get_employees_for_non_existing_shop():
     url = reverse("shop-employees", args=['14'])
     response = client.get(url)
 
@@ -45,14 +50,6 @@ def test_get_employees_by_shop():
     assert response.status_code == 404
     assert data['detail'] == 'Not found.'
 
-@pytest.mark.django_db
-def test_warranty_api_health():
-    baker.make(Warranty)
-
-    url = reverse('generics-warranty')
-    response = client.get(url)
-
-    assert response.status_code == 200
 
 @pytest.mark.django_db
 def test_warranty_exist():
@@ -61,11 +58,13 @@ def test_warranty_exist():
 
     url = reverse('generics-warranty')
     response = client.get(url)
+    assert response.status_code == 200
     data = response.json()
     data_id = [x['id'] for x in data]
 
     assert warranty.id in data_id
     assert warranty2.id in data_id
+
 
 @pytest.mark.django_db
 def test_warranty_salesperson():
@@ -82,6 +81,7 @@ def test_warranty_salesperson():
     assert good_salesperson.id in data_sp_id
     assert warranty.salesperson.id in data_sp_id
     assert not bad_salesperson.id in data_sp_id
+
 
 @pytest.mark.django_db
 def test_warranty_shop():
