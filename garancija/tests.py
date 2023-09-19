@@ -34,8 +34,9 @@ def test_get_employees_by_shop():
     assert response.status_code == 200
 
     data = response.json()
-    assert employee.id in [x['id'] for x in data]
-    assert not employee2.id in [x['id'] for x in data]
+    data_emp_id = [x['id'] for x in data]
+    assert employee.id in data_emp_id
+    assert not employee2.id in data_emp_id
 
     url = reverse("shop-employees", args=['14'])
     response = client.get(url)
@@ -45,25 +46,58 @@ def test_get_employees_by_shop():
     assert data['detail'] == 'Not found.'
 
 @pytest.mark.django_db
-def test_warranty_view():
-    shop = baker.make(Shop)
-    salesperson = baker.make(Employee, shop=shop)
+def test_warranty_api_health():
+    baker.make(Warranty)
+
+    url = reverse('generics-warranty')
+    response = client.get(url)
+
+    assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_warranty_exist():
+    warranty = baker.make(Warranty)
+    warranty2 = baker.make(Warranty)
+
+    url = reverse('generics-warranty')
+    response = client.get(url)
+    data = response.json()
+    data_id = [x['id'] for x in data]
+
+    assert warranty.id in data_id
+    assert warranty2.id in data_id
+
+@pytest.mark.django_db
+def test_warranty_salesperson():
+    good_shop = baker.make(Shop)
+    good_salesperson = baker.make(Employee, shop=good_shop)
     bad_salesperson = baker.make(Employee)
-    warranty = baker.make(Warranty, salesperson=salesperson)
+    warranty = baker.make(Warranty, salesperson=good_salesperson)
 
     url = reverse('generics-warranty')
     response = client.get(url)
     data= response.json()
+    data_sp_id = [x['salesperson']['id'] for x in data]
 
-    assert response.status_code == 200
-    assert warranty.salesperson.shop == shop
-    for x in data:
-        data_id = x['id']
-        data_product_name = x['product_name']
-    assert  warranty.id == data_id
-    assert salesperson.id in [x['salesperson']['id'] for x in data]
-    assert warranty.salesperson.id in [x['salesperson']['id'] for x in data]
-    assert shop.id in [x['salesperson']['shop']['id'] for x in data]
-    assert salesperson.shop.id in [x['salesperson']['shop']['id'] for x in data]
-    assert warranty.product_name == data_product_name
-    assert not bad_salesperson.id in [x['salesperson']['id'] for x in data]
+    assert good_salesperson.id in data_sp_id
+    assert warranty.salesperson.id in data_sp_id
+    assert not bad_salesperson.id in data_sp_id
+
+@pytest.mark.django_db
+def test_warranty_shop():
+    good_shop = baker.make(Shop)
+    bad_shop = baker.make(Shop)
+
+    good_salesperson = baker.make(Employee, shop=good_shop)
+    warranty = baker.make(Warranty, salesperson=good_salesperson)
+    warranty2 = baker.make(Warranty, salesperson=good_salesperson)
+
+    url = reverse('generics-warranty')
+    response = client.get(url)
+    data= response.json()
+    data_shop_id = [x['salesperson']['shop']['id'] for x in data]
+
+    assert warranty.salesperson.shop.id in data_shop_id
+    assert warranty2.salesperson.shop.id in data_shop_id
+    assert good_shop.id in data_shop_id
+    assert not bad_shop.id in data_shop_id
