@@ -1,4 +1,5 @@
 from rest_framework import views, response, generics, exceptions, viewsets
+from rest_framework.decorators import action
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
 
@@ -82,5 +83,12 @@ class EmployeesByShopView(generics.ListAPIView):
 
 
 class ShopViewSet(viewsets.ModelViewSet):
-    queryset = Shop.objects.all()
     serializer_class = serializers.ShopSerializer
+    queryset = Shop.objects.all()
+
+    @action(detail=True, methods=['GET'])
+    def employees(self, request, pk=None):
+            shop = self.get_object()
+            employees = Employee.objects.filter(shop=shop)
+            serializer = serializers.EmployeeSerializer(employees, many=True)
+            return response.Response(serializer.data)
