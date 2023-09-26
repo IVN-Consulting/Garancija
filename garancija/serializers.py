@@ -13,6 +13,26 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = Employee
         fields = '__all__'
 
+    def create(self, validated_data):
+        shop_data = validated_data.pop('shop')
+        shop = Shop.objects.get(**shop_data)
+        employee = Employee.objects.create(shop=shop, **validated_data)
+        return employee
+
+    def update(self, employee, validated_data):
+        shop_data = validated_data.pop('shop')
+        shop = Shop.objects.get(**shop_data)
+
+        employee.name = validated_data.get('name', employee.name)
+        employee.phone_number = validated_data.get('phone_number', employee.phone_number)
+        employee.email = validated_data.get('email', employee.email)
+        employee.shop = shop
+
+        employee.save()
+        return employee
+
+    def delete(self, employee):
+        employee.delete()
 
 class WarrantySerializer(serializers.ModelSerializer):
     salesperson = EmployeeSerializer()
@@ -20,18 +40,4 @@ class WarrantySerializer(serializers.ModelSerializer):
         model = Warranty
         fields = '__all__'
 
-class ListShopSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shop
-        fields = ['id', 'name']
 
-
-class CreateShopSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=256, required=True)
-    address = serializers.CharField(max_length=256, required=True)
-    email = serializers.EmailField(required=True)
-
-class RetriveShopSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shop
-        fields = ['id', 'name', 'email']

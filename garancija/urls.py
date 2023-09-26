@@ -5,12 +5,13 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 
 router.register(r'shops', views.ShopViewSet, basename="shops")
+router.register(r'employees', views.EmployeesViewSet, basename="employees")
+router.register(r'warranty', views.WarrantyViewSet, basename="warranty")
+
 
 urlpatterns = [
     *router.urls,
     path('health', views.Healthcheck.as_view(), name="healthcheck"),
-    path('generics/warranty', views.WarrantyView.as_view(), name="generics-warranty"),
-    path('shop', views.ShopListCreateView.as_view(), name="shop-list"),
-    path('shop/<int:pk>/', views.ShopRetrieveView.as_view(), name='shop-retrieve'),
+    path('shop/<int:pk>/', views.ShopRetrieveDestroyView.as_view(), name='shop-retrieve-destroy'),
     path('shop/<int:id>/employees', views.EmployeesByShopView.as_view(), name="shop-employees"),
 ]
