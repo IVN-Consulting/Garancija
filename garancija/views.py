@@ -86,9 +86,23 @@ class ShopViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ShopSerializer
     queryset = Shop.objects.all()
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=['GET', 'POST'], serializer_class=serializers.EmployeeSerializer)
     def employees(self, request, pk=None):
-            shop = self.get_object()
-            employees = Employee.objects.filter(shop=shop)
-            serializer = serializers.EmployeeSerializer(employees, many=True)
-            return response.Response(serializer.data)
+            if self.request.method == 'GET':
+                shop = self.get_object()
+                employees = Employee.objects.filter(shop=shop)
+                serializer = serializers.EmployeeSerializer(employees, many=True)
+                return response.Response(serializer.data)
+            else:
+                shop = self.get_object()
+                serializer = serializers.EmployeeSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                validated_data = serializer.validated_data
+                emp = Employee.objects.create(
+                    name=validated_data['name'],
+                    phone_number=validated_data['phone_number'],
+                    email=validated_data['email'],
+                    shop=shop
+                )
+                list_serializer = serializers.EmployeeSerializer(instance=emp)
+                return response.Response(list_serializer.data)
