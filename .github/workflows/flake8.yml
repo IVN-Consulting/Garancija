@@ -35,4 +35,4 @@ jobs:
       - name: test
         run: pytest
         env:
-          - DJANGO_SETTINGS_MODULE: config.settings
+          DJANGO_SETTINGS_MODULE: config.settings
