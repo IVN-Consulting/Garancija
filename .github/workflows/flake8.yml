@@ -3,9 +3,9 @@
 on: [push]
 name: flake8
 jobs:
-  flake8-lint:
+  lint:
     runs-on: ubuntu-20.04
-    name: flake8
+    name: lint
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
@@ -14,8 +14,25 @@ jobs:
         with:
           python-version: '3.10'
           architecture: x64
-      - name: flake8 Lint
+      - name: lint
         uses: py-actions/flake8@v1
         with:
           max-line-length: '120'
           exclude: 'old_code,*/migrations'
+  test:
+    runs-on: ubuntu-20.04
+    name: test
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.10'
+          architecture: x64
+      - name: test
+        uses: pavelzw/pytest-action@v2
+        with:
+          verbose: true
+          emoji: true
+          job-summary: true
