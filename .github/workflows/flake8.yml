@@ -31,6 +31,8 @@ jobs:
           python-version: '3.10'
           architecture: x64
       - name: install packages
-        run: pip install model-bakery pytest pytest-django pytest-mock
+        run: pip install -r requirements.txt
       - name: test
         run: pytest
+        env:
+          - DJANGO_SETTINGS_MODULE: config.settings
