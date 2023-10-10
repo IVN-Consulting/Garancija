@@ -1,0 +1,38 @@
+---
+# yamllint disable-line rule:truthy
+on: [push]
+name: Tests
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    name: lint
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.10'
+          architecture: x64
+      - name: lint
+        uses: py-actions/flake8@v1
+        with:
+          max-line-length: '120'
+          exclude: 'old_code,*/migrations,**/*settings.py'
+  test:
+    runs-on: ubuntu-20.04
+    name: test
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.10'
+          architecture: x64
+      - name: install packages
+        run: pip install -r requirements.txt
+      - name: test
+        run: pytest -c pytest.ini
+        env:
+          DJANGO_SETTINGS_MODULE: config.test_settings

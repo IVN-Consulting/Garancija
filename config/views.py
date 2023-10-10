@@ -7,12 +7,14 @@ class MyFirstEndpoint(APIView):
     def get(self, request):
         return Response("Hello from django rest framework")
 
+
 class Buda(APIView):
     def get(self, request):
         return Response("Hello from Buda")
 
+
 class SyncerEndpoint(APIView):
-    def get(self,request):
+    def get(self, request):
         group_workspaces = {
             'User Service': ['Authentication', 'User Management'],
             'Shop Service': ['Shop API'],

@@ -1,5 +1,5 @@
 import pytest
-from garancija.models import Shop, Employee, Warranty
+from garancija.models import Shop, Employee
 from model_bakery import baker
 from rest_framework.test import APIClient
 from rest_framework.reverse import reverse
@@ -21,7 +21,7 @@ def test_list_employees():
     data = response.json()
     data_emp_id = [int(x['id']) for x in data]
     assert employee.id in data_emp_id
-    assert not employee2.id in data_emp_id
+    assert employee2.id not in data_emp_id
 
 
 @pytest.mark.django_db
@@ -29,7 +29,7 @@ def test_list_employees_for_non_existing_shop():
     url = reverse("employees-list", args=['14'])
     response = client.get(url)
 
-    data=response.json()
+    data = response.json()
     assert response.status_code == 404
     assert data['detail'] == 'Not found.'
 
@@ -43,7 +43,6 @@ def test_create_employee():
 def test_retrieve_employee():
     shop = baker.make(Shop)
     employee = baker.make(Employee, shop=shop)
-
 
     url = reverse("employees-detail", args=[shop.id, employee.id])
     response = client.get(url)

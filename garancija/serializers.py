@@ -38,6 +38,7 @@ class EmployeeWithoutShopSerializer(serializers.ModelSerializer):
 
 class EmployeeSerializer(serializers.ModelSerializer):
     shop = ShopSerializer()
+
     class Meta:
         model = Employee
         fields = '__all__'
@@ -45,8 +46,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 class WarrantySerializer(serializers.ModelSerializer):
     salesperson = EmployeeSerializer()
+
     class Meta:
         model = Warranty
         fields = '__all__'
-
-
