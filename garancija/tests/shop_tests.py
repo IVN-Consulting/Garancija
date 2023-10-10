@@ -1,5 +1,5 @@
 import pytest
-from garancija.models import Shop, Employee, Warranty
+from garancija.models import Shop
 from model_bakery import baker
 from rest_framework.test import APIClient
 from rest_framework.reverse import reverse
@@ -88,7 +88,6 @@ def test_create_shop():
     assert data['name'] == shop.name
     assert data['address'] == shop.address
     assert data['email'] == shop.email
-
 
 
 @pytest.mark.django_db
