@@ -18,3 +18,4 @@ jobs:
         uses: py-actions/flake8@v1
         with:
           max-line-length: '120'
+          exclude: 'old_code'
