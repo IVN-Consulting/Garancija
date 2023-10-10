@@ -41,7 +41,21 @@ def test_create_employee():
 
 @pytest.mark.django_db
 def test_retrieve_employee():
-    pass
+    shop = baker.make(Shop)
+    employee = baker.make(Employee, shop=shop)
+
+
+    url = reverse("employees-detail", args=[shop.id, employee.id])
+    response = client.get(url)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data['id'] == employee.id
+    url2 = reverse("employees-detail", args=[shop.id, '15'])
+    response2 = client.get(url2)
+    assert response2.status_code == 404
+    data2 = response2.json()
+    assert data2['detail'] == 'Not found.'
 
 
 @pytest.mark.django_db
