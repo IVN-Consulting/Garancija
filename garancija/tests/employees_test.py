@@ -14,7 +14,7 @@ def test_list_employees():
     employee = baker.make(Employee, shop=shop)
     employee2 = baker.make(Employee)
 
-    url = reverse("shop-employees", args=[shop.id])
+    url = reverse("employees-list", args=[shop.id])
     response = client.get(url)
     assert response.status_code == 200
 
@@ -26,7 +26,7 @@ def test_list_employees():
 
 @pytest.mark.django_db
 def test_list_employees_for_non_existing_shop():
-    url = reverse("shop-employees", args=['14'])
+    url = reverse("employees-list", args=['14'])
     response = client.get(url)
 
     data=response.json()
@@ -41,11 +41,30 @@ def test_create_employee():
 
 @pytest.mark.django_db
 def test_retrieve_employee():
+    shop = baker.make(Shop)
+    employee = baker.make(Employee, shop=shop)
+
+
+    url = reverse("employees-detail", args=[shop.id, employee.id])
+    response = client.get(url)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data['id'] == employee.id
+    url2 = reverse("employees-detail", args=[shop.id, '15'])
+    response2 = client.get(url2)
+    assert response2.status_code == 404
+    data2 = response2.json()
+    assert data2['detail'] == 'Not found.'
+
+
+@pytest.mark.django_db
+def test_update_employee():
     pass
 
 
 @pytest.mark.django_db
-def test_edit_employee():
+def test_partial_update_employee():
     pass
 
 

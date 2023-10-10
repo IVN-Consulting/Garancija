@@ -28,18 +28,5 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings
 
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    ports:
-      - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: postgres@email.com
-      PGADMIN_DEFAULT_PASSWORD: postgres
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-
-
 volumes:
   db-data:
-  pgadmin-data:

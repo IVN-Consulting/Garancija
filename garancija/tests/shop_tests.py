@@ -93,9 +93,30 @@ def test_create_shop():
 
 @pytest.mark.django_db
 def test_edit_shop():
-    pass
+    # Given
+    data = {
+        "address": "changed adr",
+        "email": "changed@email.com"
+    }
+    shop = baker.make(Shop)
+    # When
+    url = reverse("shops-detail", args=[shop.id])
+    response = client.patch(url, data=data)
+    r_data = response.json()
+    # Then
+    assert r_data['id'] == shop.id
+    assert r_data['address'] == data['address']
+    assert r_data['email'] == data['email']
 
 
 @pytest.mark.django_db
 def test_delete_shop():
-    pass
+    # Given
+    shop = baker.make(Shop)
+    # When
+    url = reverse("shops-detail", args=[shop.id])
+    response_delete = client.delete(url)
+    response_get_after_del = client.get(url)
+    # Then
+    assert response_delete.status_code == 204
+    assert response_get_after_del.status_code == 404

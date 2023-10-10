@@ -1,4 +1,4 @@
-from rest_framework import views, response, generics, exceptions, viewsets
+from rest_framework import views, response, generics, exceptions, viewsets, status
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
 
@@ -8,79 +8,28 @@ class Healthcheck(views.APIView):
         return response.Response("OK")
 
 
-class WarrantyViewBuda(views.APIView):
-    def get(self, request):
-        data = []
-        for warranty in Warranty.objects.all():
-            data.append({
-                'id': warranty.id,
-                'product_name': warranty.product_name,
-                'shop': {
-                    'shop_name': warranty.salesperson.shop.name,
-                    'shop_address': warranty.salesperson.shop.address,
-                    'salesperson': warranty.salesperson.name,
-                },
-                'start_date': warranty.start_date,
-                'end_date': warranty.end_date
-            })
-        return response.Response(data)
-
-
-class WarrantyView(generics.ListCreateAPIView):
-    queryset = Warranty.objects.all()
-    serializer_class = serializers.WarrantySerializer
-
-
-class ShopListCreateView(generics.ListCreateAPIView):
+class ShopViewSet(viewsets.ModelViewSet):
     queryset = Shop.objects.all()
+    serializer_class = serializers.ShopSerializer
+
+
+class EmployeesViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return serializers.ListShopSerializer
-        elif self.request.method == 'POST':
-            return serializers.CreateShopSerializer
+        if self.action in ["create", 'update', 'partial_update', 'destroy']:
+            return serializers.EmployeeWithoutShopSerializer
         else:
-            return super().get_serializer_class()
-
-    def post(self, request):
-        serializer_class = self.get_serializer_class()
-        serializer = serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        validated_data = serializer.validated_data
-        shop = Shop.objects.create(
-            name=validated_data['name'],
-            email=validated_data['email'],
-            address=validated_data['address'],
-        )
-        list_serializer = serializers.ListShopSerializer(instance=shop)
-        return response.Response(list_serializer.data)
-
-
-class ShopRetrieveView(generics.RetrieveAPIView):
-    queryset = Shop.objects.all()
-    serializer_class = serializers.RetriveShopSerializer
-
-    def get_object(self):
-        try:
-            pk = self.kwargs.get('pk')
-            return Shop.objects.get(pk=pk)
-        except Shop.DoesNotExist:
-            raise exceptions.NotFound
-
-
-class EmployeesByShopView(generics.ListAPIView):
-    serializer_class = serializers.EmployeeSerializer
+            return serializers.EmployeeSerializer
 
     def get_queryset(self):
+        shop_id = int(self.kwargs['shop_id'])
         try:
-            shop_id = self.kwargs.get('id')
             shop = Shop.objects.get(id=shop_id)
             return Employee.objects.filter(shop=shop)
         except Shop.DoesNotExist:
             raise exceptions.NotFound
 
 
-
-class ShopViewSet(viewsets.ModelViewSet):
-    queryset = Shop.objects.all()
-    serializer_class = serializers.ShopSerializer
+class WarrantyViewSet(viewsets.ModelViewSet):
+    queryset = Warranty.objects.all()
+    serializer_class = serializers.WarrantySerializer
