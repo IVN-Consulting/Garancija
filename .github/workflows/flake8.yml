@@ -1,9 +1,6 @@
 ---
 # yamllint disable-line rule:truthy
-on:
-  push:
-    paths:
-      - '*'
+on: [push]
 name: flake8
 jobs:
   flake8-lint:
