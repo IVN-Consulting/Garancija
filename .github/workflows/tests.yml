@@ -1,7 +1,7 @@
 ---
 # yamllint disable-line rule:truthy
 on: [push]
-name: flake8
+name: Tests
 jobs:
   lint:
     runs-on: ubuntu-20.04
@@ -33,6 +33,6 @@ jobs:
       - name: install packages
         run: pip install -r requirements.txt
       - name: test
-        run: pytest
+        run: pytest -c pytest.ini
         env:
-          DJANGO_SETTINGS_MODULE: config.settings
+          DJANGO_SETTINGS_MODULE: config.test_settings
