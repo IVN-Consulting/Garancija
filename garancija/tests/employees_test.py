@@ -36,7 +36,22 @@ def test_list_employees_for_non_existing_shop():
 
 @pytest.mark.django_db
 def test_create_employee():
-    pass
+    payload = {
+        'name': 'New name',
+        'phone_number': '12345',
+        'email': 'new@email.com',
+    }
+    shop = baker.make(Shop)
+
+    url = reverse('employees-list', args=[shop.id])
+    response = client.post(url, data=payload)
+
+    assert response.status_code == 201, response.json()
+    data = response.json()
+
+    assert data['name'] == payload['name']
+    assert data['phone_number'] == payload['phone_number']
+    assert data['email'] == payload['email']
 
 
 @pytest.mark.django_db
@@ -59,14 +74,53 @@ def test_retrieve_employee():
 
 @pytest.mark.django_db
 def test_update_employee():
-    pass
+    payload = {
+        'name': 'Changed name',
+        'phone_number': '12345',
+        'email': 'changed@email.com'
+    }
+    shop = baker.make(Shop)
+    employee = baker.make(Employee, shop=shop)
+
+    url = reverse('employees-detail', args=[shop.id, employee.id])
+    response = client.put(url, data=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data['id'] == employee.id
+    assert data['name'] == payload['name']
+    assert data['phone_number'] == payload['phone_number']
+    assert data['email'] == payload['email']
 
 
 @pytest.mark.django_db
 def test_partial_update_employee():
-    pass
+    payload = {
+        'email': 'changed@email.com'
+    }
+    shop = baker.make(Shop)
+    employee = baker.make(Employee, shop=shop)
+
+    url = reverse('employees-detail', args=[shop.id, employee.id])
+    response = client.patch(url, data=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data['id'] == employee.id
+    assert data['name'] == employee.name
+    assert data['phone_number'] == employee.phone_number
+    assert data['email'] == payload['email']
 
 
 @pytest.mark.django_db
 def test_delete_employee():
-    pass
+    shop = baker.make(Shop)
+    employee = baker.make(Employee, shop=shop)
+
+    url = reverse("employees-detail", args=[shop.id, employee.id])
+    response = client.delete(url)
+
+    assert response.status_code == 204
+    assert client.get(url).status_code == 404
