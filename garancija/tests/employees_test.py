@@ -53,6 +53,7 @@ def test_create_employee():
     assert data['phone_number'] == resp_data['phone_number']
     assert data['email'] == resp_data['email']
 
+
 @pytest.mark.django_db
 def test_retrieve_employee():
     shop = baker.make(Shop)
