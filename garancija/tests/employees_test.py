@@ -36,7 +36,22 @@ def test_list_employees_for_non_existing_shop():
 
 @pytest.mark.django_db
 def test_create_employee():
-    pass
+    shop = baker.make(Shop)
+    data = {
+        "name": "novi",
+        "phone_number": "1234",
+        "email": "novi@email.com",
+    }
+    url = reverse("employees-list", args=[shop.id])
+    response = client.post(url, data=data)
+
+    # Then
+    assert response.status_code == 201
+    resp_data = response.json()
+
+    assert data['name'] == resp_data['name']
+    assert data['phone_number'] == resp_data['phone_number']
+    assert data['email'] == resp_data['email']
 
 
 @pytest.mark.django_db
@@ -59,14 +74,55 @@ def test_retrieve_employee():
 
 @pytest.mark.django_db
 def test_update_employee():
-    pass
+    # Given
+    data = {
+        "name": "new name",
+        "phone_number": "1234",
+        "email": "changed@email.com"
+    }
+    shop = baker.make(Shop)
+    emp = baker.make(Employee, shop=shop)
+    # When
+    url = reverse("employees-detail", args=[shop.id, emp.id])
+    response = client.patch(url, data=data)
+    r_data = response.json()
+    # Then
+    assert response.status_code == 200
+    assert r_data['id'] == emp.id
+    assert r_data['name'] == data['name']
+    assert r_data['phone_number'] == data['phone_number']
+    assert r_data['email'] == data['email']
 
 
 @pytest.mark.django_db
 def test_partial_update_employee():
-    pass
+    # Given
+    data = {
+        "phone_number": "1234",
+        "email": "changed@email.com"
+    }
+    shop = baker.make(Shop)
+    emp = baker.make(Employee, shop=shop)
+    # When
+    url = reverse("employees-detail", args=[shop.id, emp.id])
+    response = client.patch(url, data=data)
+    r_data = response.json()
+    # Then
+    assert response.status_code == 200
+    assert r_data['id'] == emp.id
+    assert r_data['phone_number'] == data['phone_number']
+    assert r_data['email'] == data['email']
 
 
 @pytest.mark.django_db
 def test_delete_employee():
-    pass
+    # Given
+    shop = baker.make(Shop)
+    emp = baker.make(Employee, shop=shop)
+    # When
+    url = reverse("employees-detail", args=[shop.id, emp.id])
+    response_delete = client.delete(url)
+    response_get_after_del = client.get(url)
+    # Then
+    assert response_delete.status_code == 204
+    assert response_get_after_del.status_code == 404
