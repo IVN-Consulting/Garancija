@@ -55,4 +55,3 @@ class ListWarrantySerializer(serializers.ModelSerializer):
         model = Warranty
         fields = '__all__'
         depth = 1  # prikazuje svaki FK jedan stepen dubine, kad bi bilo 2, pokazuje i sve iz shopa za tog prodavca
-

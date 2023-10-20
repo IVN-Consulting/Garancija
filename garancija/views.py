@@ -4,7 +4,6 @@ from garancija import serializers
 from rest_framework.response import Response
 
 
-
 class Healthcheck(views.APIView):
     def get(self, request):
         return response.Response("OK")
