@@ -1,7 +1,6 @@
-from rest_framework import views, exceptions, viewsets
+from rest_framework import views, exceptions, viewsets, response
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
-from rest_framework.response import Response
 
 
 class Healthcheck(views.APIView):
