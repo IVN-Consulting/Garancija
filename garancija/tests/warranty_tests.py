@@ -1,9 +1,8 @@
 import pytest
-from garancija.models import Warranty, Shop, Employee
+from garancija.models import Warranty, Employee
 from rest_framework.test import APIClient
 from rest_framework.reverse import reverse
 from model_bakery import baker
-
 
 
 client = APIClient()
@@ -92,7 +91,6 @@ def test_update_warranty():
         'start_date': '2023-10-11',
         'end_date': '2026-02-15'
     }
-
 
     url = reverse('warranty-detail', args=[warranty.id])
     response = client.put(url, data=data)

@@ -55,7 +55,7 @@ class ListWarrantySerializer(serializers.ModelSerializer):
 class CreateWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
-        fields = ['salesperson','product_name', 'start_date', 'end_date']
+        fields = ['salesperson', 'product_name', 'start_date', 'end_date']
 
 
 class UpdateWarrantySerializer(serializers.ModelSerializer):
