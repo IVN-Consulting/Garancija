@@ -29,7 +29,6 @@ def test_list_employees_for_non_existing_shop():
     url = reverse("employees-list", args=['14'])
     response = client.get(url)
 
-    data = response.json()
     assert response.status_code == 404
 
 
@@ -65,6 +64,7 @@ def test_retrieve_employee():
 
     assert data['id'] == employee.id
     assert data['shop']['id'] == shop.id
+
 
 @pytest.mark.django_db
 def test_retrieve_non_existing_employee():
