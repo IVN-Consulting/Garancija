@@ -41,9 +41,7 @@ def test_retrieve_warranty():
 
 @pytest.mark.django_db
 def test_retrieve_warranty_404():
-    warranty_id = 111
-
-    url = reverse('warranty-detail', args=[warranty_id])
+    url = reverse('warranty-detail', args=['14'])
     response = client.get(url)
     data = response.json()
 
@@ -108,7 +106,8 @@ def test_update_warranty():
 def test_partial_update_warranty():
     warranty = baker.make(Warranty)
     data = {
-        'product_name': 'Changed prod name'
+        'product_name': 'Changed prod name',
+        'end_date': '2028-11-11'
     }
 
     url = reverse('warranty-detail', args=[warranty.id])
@@ -119,3 +118,5 @@ def test_partial_update_warranty():
 
     assert resp_data['id'] == warranty.id
     assert resp_data['product_name'] == data['product_name']
+    assert resp_data['start_date'] == str(warranty.start_date)
+    assert resp_data['end_date'] == data['end_date']

@@ -61,4 +61,4 @@ class CreateWarrantySerializer(serializers.ModelSerializer):
 class UpdateWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
-        fields = ['id', 'product_name', 'start_date', 'end_date']
+        exclude = ['salesperson']
