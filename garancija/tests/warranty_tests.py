@@ -113,7 +113,6 @@ def test_edit_warranty():
     # When
     url = reverse("warranty-detail", args=[warranty.id])
     response = client.put(url, data=data)
-    r_data = response.json()
     # Then
     assert response.status_code == 200, response.json()
     resp_data = response.json()

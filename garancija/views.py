@@ -1,4 +1,4 @@
-from rest_framework import views, response, exceptions, viewsets, status
+from rest_framework import views, exceptions, viewsets
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
 from rest_framework.response import Response
