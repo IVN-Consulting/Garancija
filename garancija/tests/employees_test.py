@@ -82,12 +82,13 @@ def test_update_employee():
     }
     shop = baker.make(Shop)
     emp = baker.make(Employee, shop=shop)
-    # When
+
     url = reverse("employees-detail", args=[shop.id, emp.id])
-    response = client.patch(url, data=data)
-    r_data = response.json()
-    # Then
+    response = client.put(url, data=data)
+
     assert response.status_code == 200
+    r_data = response.json()
+
     assert r_data['id'] == emp.id
     assert r_data['name'] == data['name']
     assert r_data['phone_number'] == data['phone_number']

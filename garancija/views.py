@@ -32,4 +32,11 @@ class EmployeesViewSet(viewsets.ModelViewSet):
 
 class WarrantyViewSet(viewsets.ModelViewSet):
     queryset = Warranty.objects.all()
-    serializer_class = serializers.WarrantySerializer
+
+    def get_serializer_class(self):
+        if self.action in ["create", 'destroy']:
+            return serializers.CreateWarrantySerializer
+        elif self.action in ['update', 'partial_update']:
+            return serializers.UpdateWarrantySerializer
+        else:
+            return serializers.ListWarrantySerializer
