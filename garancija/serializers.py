@@ -44,7 +44,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CreateWarrantySerializer(serializers.ModelSerializer):
+class CreateUpdateWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
         fields = '__all__'
@@ -54,4 +54,10 @@ class ListWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
         fields = '__all__'
-        depth = 1  # prikazuje svaki FK jedan stepen dubine, kad bi bilo 2, pokazuje i sve iz shopa za tog prodavca
+        depth = 1
+
+
+class PartialUpdateWarrantySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warranty
+        fields = ['start_date', 'end_date']
