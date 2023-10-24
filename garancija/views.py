@@ -1,4 +1,4 @@
-from rest_framework import views, exceptions, viewsets, response
+from rest_framework import views, exceptions, viewsets, response, status
 from garancija.models import Warranty, Employee, Shop
 from garancija import serializers
 
@@ -34,9 +34,16 @@ class WarrantyViewSet(viewsets.ModelViewSet):
     queryset = Warranty.objects.all()
 
     def get_serializer_class(self):
-        if self.action in ["create", 'update']:
+        if self.action in ["create", 'update', 'partial_update']:
             return serializers.CreateUpdateWarrantySerializer
-        elif self.action in ['partial_update']:
-            return serializers.PartialUpdateWarrantySerializer
         else:
             return serializers.ListWarrantySerializer
+
+    def create(self, request, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        warranty = Warranty.objects.get(id=serializer.data['id'])
+        output_serializer = serializers.ListWarrantySerializer(warranty)
+        output_data = output_serializer.data
+        return response.Response(output_data, status=status.HTTP_201_CREATED)

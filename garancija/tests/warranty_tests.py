@@ -66,7 +66,7 @@ def test_create_warranty():
     assert data['product_name'] == resp_data['product_name']
     assert data['start_date'] == resp_data['start_date']
     assert data['end_date'] == resp_data['end_date']
-    assert data['salesperson'] == salesperson.id
+    assert resp_data['salesperson']['id'] == salesperson.id
 
 
 @pytest.mark.django_db
@@ -84,19 +84,39 @@ def test_delete_warranty():
 
 @pytest.mark.django_db
 def test_partial_edit_warranty():
-    # Given
-    data = {
-        "start_date": "2022-10-10",
-        "end_date": "2033-10-10"
-    }
+    salesperson = baker.make(Employee)
+    test_data = [
+        ['product_name', 'test name'],
+        ['start_date', '2022-10-10'],
+        ['end_date', '2033-10-10'],
+        ['salesperson', salesperson.id]
+    ]
+
     warranty = baker.make(Warranty)
     # When
     url = reverse("warranty-detail", args=[warranty.id])
-    response = client.patch(url, data=data)
-    r_data = response.json()
-    # Then
-    assert r_data['start_date'] == data['start_date']
-    assert r_data['end_date'] == data['end_date']
+
+    for field_name, field_value in test_data:
+        warranty.refresh_from_db()
+        old_data = {
+            warranty_field_name: getattr(warranty, warranty_field_name)
+            for warranty_field_name, non_used_value in test_data
+        }
+
+        response = client.patch(
+            url,
+            data={field_name: field_value}
+        )
+        assert response.status_code == 200
+
+        warranty.refresh_from_db()
+        new_data = {
+            warranty_field_name: getattr(warranty, warranty_field_name)
+            for warranty_field_name, non_used_value in test_data
+        }
+
+        expected = ((field_name, getattr(warranty, field_name)),)
+        assert set(expected) == set(new_data.items()) - set(old_data.items())
 
 
 @pytest.mark.django_db

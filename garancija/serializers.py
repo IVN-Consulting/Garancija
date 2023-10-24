@@ -45,6 +45,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class CreateUpdateWarrantySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Warranty
         fields = '__all__'
