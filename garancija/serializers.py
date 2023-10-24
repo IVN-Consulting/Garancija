@@ -44,9 +44,21 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class WarrantySerializer(serializers.ModelSerializer):
-    salesperson = EmployeeSerializer()
+class CreateUpdateWarrantySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Warranty
         fields = '__all__'
+
+
+class ListWarrantySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warranty
+        fields = '__all__'
+        depth = 1
+
+
+class PartialUpdateWarrantySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warranty
+        fields = ['start_date', 'end_date']
