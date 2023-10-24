@@ -1,6 +1,7 @@
 from rest_framework import views, exceptions, viewsets, response, status
-from garancija.models import Warranty, Employee, Shop
+from garancija.models import Warranty, Shop
 from garancija import serializers
+from user.models import User
 
 
 class Healthcheck(views.APIView):
@@ -25,7 +26,7 @@ class EmployeesViewSet(viewsets.ModelViewSet):
         shop_id = int(self.kwargs['shop_id'])
         try:
             shop = Shop.objects.get(id=shop_id)
-            return Employee.objects.filter(shop=shop)
+            return User.objects.filter(user_type="employee", shop=shop)
         except Shop.DoesNotExist:
             raise exceptions.NotFound
 

@@ -1,8 +1,9 @@
 import pytest
-from garancija.models import Shop, Employee
+from garancija.models import Shop
 from model_bakery import baker
 from rest_framework.test import APIClient
 from rest_framework.reverse import reverse
+from user.models import User
 
 
 client = APIClient()
@@ -11,8 +12,8 @@ client = APIClient()
 @pytest.mark.django_db
 def test_list_employees():
     shop = baker.make(Shop)
-    employee = baker.make(Employee, shop=shop)
-    employee2 = baker.make(Employee)
+    employee = baker.make(User, user_type="employee", shop=shop)
+    employee2 = baker.make(User, user_type="employee")
 
     url = reverse("employees-list", args=[shop.id])
     response = client.get(url)
@@ -38,7 +39,8 @@ def test_list_employees_for_non_existing_shop():
 def test_create_employee():
     shop = baker.make(Shop)
     data = {
-        "name": "novi",
+        "first_name": "novi",
+        "last_name": "god",
         "phone_number": "1234",
         "email": "novi@email.com",
     }
@@ -46,18 +48,21 @@ def test_create_employee():
     response = client.post(url, data=data)
 
     # Then
-    assert response.status_code == 201
+    assert response.status_code == 201, response.json()
     resp_data = response.json()
 
-    assert data['name'] == resp_data['name']
+    assert data['first_name'] == resp_data['first_name']
+    assert data['last_name'] == resp_data['last_name']
     assert data['phone_number'] == resp_data['phone_number']
     assert data['email'] == resp_data['email']
+    employee = User.objects.get(id=resp_data['id'])
+    assert employee.shop == shop
 
 
 @pytest.mark.django_db
 def test_retrieve_employee():
     shop = baker.make(Shop)
-    employee = baker.make(Employee, shop=shop)
+    employee = baker.make(User, user_type="employee", shop=shop)
 
     url = reverse("employees-detail", args=[shop.id, employee.id])
     response = client.get(url)
@@ -76,12 +81,13 @@ def test_retrieve_employee():
 def test_update_employee():
     # Given
     data = {
-        "name": "new name",
+        "first_name": "new name",
+        "last_name": "stagod",
         "phone_number": "1234",
         "email": "changed@email.com"
     }
     shop = baker.make(Shop)
-    emp = baker.make(Employee, shop=shop)
+    emp = baker.make(User, user_type="employee", shop=shop)
     # When
     url = reverse("employees-detail", args=[shop.id, emp.id])
     response = client.patch(url, data=data)
@@ -89,7 +95,8 @@ def test_update_employee():
     # Then
     assert response.status_code == 200
     assert r_data['id'] == emp.id
-    assert r_data['name'] == data['name']
+    assert r_data['first_name'] == data['first_name']
+    assert r_data['last_name'] == data['last_name']
     assert r_data['phone_number'] == data['phone_number']
     assert r_data['email'] == data['email']
 
@@ -102,7 +109,7 @@ def test_partial_update_employee():
         "email": "changed@email.com"
     }
     shop = baker.make(Shop)
-    emp = baker.make(Employee, shop=shop)
+    emp = baker.make(User, user_type="employee", shop=shop)
     # When
     url = reverse("employees-detail", args=[shop.id, emp.id])
     response = client.patch(url, data=data)
@@ -118,7 +125,7 @@ def test_partial_update_employee():
 def test_delete_employee():
     # Given
     shop = baker.make(Shop)
-    emp = baker.make(Employee, shop=shop)
+    emp = baker.make(User, user_type="employee", shop=shop)
     # When
     url = reverse("employees-detail", args=[shop.id, emp.id])
     response_delete = client.delete(url)
