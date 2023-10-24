@@ -2,8 +2,8 @@ import pytest
 from rest_framework.test import APIClient
 from model_bakery import baker
 from garancija.models import Warranty
-from garancija.models import Employee
 from rest_framework.reverse import reverse
+from user.models import User
 
 
 client = APIClient()
@@ -50,7 +50,7 @@ def test_retrieve_warranty():
 @pytest.mark.django_db
 def test_create_warranty():
     # Given
-    salesperson = baker.make(Employee)
+    salesperson = baker.make(User, user_type="employee")
     data = {
         "product_name": "test name",
         "start_date": "2022-10-10",
@@ -84,7 +84,7 @@ def test_delete_warranty():
 
 @pytest.mark.django_db
 def test_partial_edit_warranty():
-    salesperson = baker.make(Employee)
+    salesperson = baker.make(User, user_type="employee")
     test_data = [
         ['product_name', 'test name'],
         ['start_date', '2022-10-10'],
@@ -122,7 +122,7 @@ def test_partial_edit_warranty():
 @pytest.mark.django_db
 def test_edit_warranty():
     # Given
-    salesperson = baker.make(Employee)
+    salesperson = baker.make(User, user_type="employee")
     data = {
         "product_name": "test name",
         "start_date": "2022-10-10",
