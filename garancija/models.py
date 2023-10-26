@@ -17,5 +17,6 @@ class Warranty(models.Model):
     end_date = models.DateField()
     salesperson = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="salesperson")
     customer = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="warranties", default=None)
+
     def __str__(self):
         return f"{self.product_name} - {self.salesperson.shop} - {self.salesperson}"
