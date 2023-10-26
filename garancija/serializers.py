@@ -57,6 +57,14 @@ class CreateUpdateWarrantySerializer(serializers.ModelSerializer):
         model = Warranty
         fields = '__all__'
 
+    def validate(self, attrs):
+        start_date = attrs.get('start_date') or self.instance.start_date
+        end_date = attrs.get('end_date') or self.instance.end_date
+
+        if start_date > end_date:
+            raise serializers.ValidationError('End date must occur after start date')
+        return super().validate(attrs)
+
 
 class ListWarrantySerializer(serializers.ModelSerializer):
     class Meta:

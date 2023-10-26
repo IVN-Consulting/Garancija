@@ -12,10 +12,11 @@ client = APIClient()
 @pytest.mark.django_db
 def test_list_warranties():
     # Given
+    customer = baker.make(User, user_type='customer')
     num_of_warranty = 10
     warranty_ids = []
     for _ in range(num_of_warranty):
-        warranty = baker.make(Warranty)
+        warranty = baker.make(Warranty, customer=customer)
         warranty_ids.append(warranty.id)
 
     # When
@@ -31,7 +32,8 @@ def test_list_warranties():
 @pytest.mark.django_db
 def test_retrieve_warranty():
     # Given
-    warranty = baker.make(Warranty)
+    customer = baker.make(User, user_type='customer')
+    warranty = baker.make(Warranty, customer=customer)
 
     # When
     url = reverse("warranty-detail", args=[warranty.id])
@@ -45,17 +47,20 @@ def test_retrieve_warranty():
     assert data['start_date'] == str(warranty.start_date)
     assert data['end_date'] == str(warranty.end_date)
     assert data['salesperson']['id'] == warranty.salesperson.id
+    assert data['customer']['id'] == warranty.customer.id
 
 
 @pytest.mark.django_db
 def test_create_warranty():
     # Given
+    customer = baker.make(User, user_type='customer')
     salesperson = baker.make(User, user_type="employee")
     data = {
         "product_name": "test name",
         "start_date": "2022-10-10",
         "end_date": "2033-10-10",
-        "salesperson": salesperson.id
+        "salesperson": salesperson.id,
+        "customer": customer.id
     }
     # When
     url = reverse("warranty-list")
@@ -67,12 +72,14 @@ def test_create_warranty():
     assert data['start_date'] == resp_data['start_date']
     assert data['end_date'] == resp_data['end_date']
     assert resp_data['salesperson']['id'] == salesperson.id
+    assert resp_data['customer']['id'] == customer.id
 
 
 @pytest.mark.django_db
 def test_delete_warranty():
     # Given
-    warranty = baker.make(Warranty)
+    customer = baker.make(User, user_type='customer')
+    warranty = baker.make(Warranty, customer=customer)
     # When
     url = reverse("warranty-detail", args=[warranty.id])
     response_delete = client.delete(url)
@@ -84,15 +91,18 @@ def test_delete_warranty():
 
 @pytest.mark.django_db
 def test_partial_edit_warranty():
+    customer = baker.make(User, user_type='customer')
     salesperson = baker.make(User, user_type="employee")
     test_data = [
         ['product_name', 'test name'],
         ['start_date', '2022-10-10'],
         ['end_date', '2033-10-10'],
-        ['salesperson', salesperson.id]
+        ['salesperson', salesperson.id],
+        ['customer', customer.id]
     ]
 
-    warranty = baker.make(Warranty)
+    customer2 = baker.make(User, user_type='customer')
+    warranty = baker.make(Warranty, customer=customer2)
     # When
     url = reverse("warranty-detail", args=[warranty.id])
 
@@ -122,14 +132,16 @@ def test_partial_edit_warranty():
 @pytest.mark.django_db
 def test_edit_warranty():
     # Given
+    customer = baker.make(User, user_type='customer')
     salesperson = baker.make(User, user_type="employee")
     data = {
         "product_name": "test name",
-        "start_date": "2022-10-10",
+        "start_date": "2023-10-10",
         "end_date": "2033-10-10",
-        "salesperson": salesperson.id
+        "salesperson": salesperson.id,
+        "customer": customer.id
     }
-    warranty = baker.make(Warranty)
+    warranty = baker.make(Warranty, customer=customer)
     # When
     url = reverse("warranty-detail", args=[warranty.id])
     response = client.put(url, data=data)
@@ -139,4 +151,5 @@ def test_edit_warranty():
     assert data['product_name'] == resp_data['product_name']
     assert data['start_date'] == resp_data['start_date']
     assert data['end_date'] == resp_data['end_date']
-    assert salesperson.id == data['salesperson']
+    assert salesperson.id == resp_data['salesperson']
+    assert customer.id == resp_data['customer']
