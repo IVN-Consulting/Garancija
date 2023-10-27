@@ -31,6 +31,11 @@ class EmployeesViewSet(viewsets.ModelViewSet):
             raise exceptions.NotFound
 
 
+class CustomersViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(user_type="customer")
+    serializer_class = serializers.CustomerSerializer
+
+
 class WarrantyViewSet(viewsets.ModelViewSet):
     queryset = Warranty.objects.all()
 

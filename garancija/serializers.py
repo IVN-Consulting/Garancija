@@ -12,7 +12,7 @@ class ShopSerializer(serializers.ModelSerializer):
 class EmployeeWithoutShopSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
-        attrs['username'] = attrs['email']
+        attrs['username'] = attrs.get('email')
         attrs['user_type'] = 'employee'
         attrs['password'] = 'dummypassword'
         return super().validate(attrs)
@@ -34,8 +34,8 @@ class EmployeeWithoutShopSerializer(serializers.ModelSerializer):
         employee.first_name = validated_data.get('first_name', employee.first_name)
         employee.last_name = validated_data.get('last_name', employee.last_name)
         employee.phone_number = validated_data.get('phone_number', employee.phone_number)
-        employee.email = validated_data.get('email', employee.email)
-
+        if 'email' in validated_data:
+            employee.email = validated_data['email']
         employee.save()
         return employee
 
@@ -69,3 +69,28 @@ class PartialUpdateWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
         fields = ['start_date', 'end_date']
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        attrs['username'] = attrs.get('email')
+        attrs['user_type'] = 'customer'
+        attrs['password'] = 'dummypassword'
+        return super().validate(attrs)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'id']
+
+    def update(self, customer, validated_data):
+        customer.first_name = validated_data.get('first_name', customer.first_name)
+        customer.last_name = validated_data.get('last_name', customer.last_name)
+        customer.phone_number = validated_data.get('phone_number', customer.phone_number)
+        if 'email' in validated_data:
+            customer.email = validated_data['email']
+
+        customer.save()
+        return customer
+
+    def delete(self, customer):
+        customer.delete()
