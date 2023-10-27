@@ -67,10 +67,11 @@ class WarrantiesByCustomer(viewsets.ModelViewSet):
             return serializers.WarrantiesWithoutCustomerSerializer
         else:
             return serializers.ListWarrantiesForCustomerSerializer
+
     def get_queryset(self):
         customer_id = int(self.kwargs['customer_id'])
         try:
-            customer = User.objects.get(user_type='customer', id=customer_id )
+            customer = User.objects.get(user_type='customer', id=customer_id)
             return customer.warranties.all()
         except User.DoesNotExist:
             raise exceptions.NotFound

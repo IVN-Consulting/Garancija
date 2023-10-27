@@ -1,9 +1,5 @@
 import pytest
-from garancija.models import Shop
-from model_bakery import baker
 from rest_framework.test import APIClient
-from rest_framework.reverse import reverse
-from user.models import User
 
 
 client = APIClient()
