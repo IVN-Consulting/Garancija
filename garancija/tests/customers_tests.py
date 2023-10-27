@@ -115,5 +115,3 @@ def test_delete_customer():
     # Then
     assert response_delete.status_code == 204
     assert response_get_after_del.status_code == 404
-
-

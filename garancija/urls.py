@@ -9,8 +9,6 @@ router.register(r'shops/(?P<shop_id>[0-9]*)/employees', views.EmployeesViewSet, 
 router.register(r'warranty', views.WarrantyViewSet, basename="warranty")
 router.register(r'customers', views.CustomersViewSet, basename="customers")
 
-
-
 urlpatterns = [
     *router.urls,
     path('health', views.Healthcheck.as_view(), name="healthcheck"),
