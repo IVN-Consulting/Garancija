@@ -7,7 +7,7 @@ router = DefaultRouter()
 router.register(r'shops', views.ShopViewSet, basename="shops")
 router.register(r'shops/(?P<shop_id>[0-9]*)/employees', views.EmployeesViewSet, basename="employees")
 router.register(r'warranty', views.WarrantyViewSet, basename="warranty")
-
+router.register(r'customers', views.CustomersViewSet, basename="customers")
 
 urlpatterns = [
     *router.urls,
