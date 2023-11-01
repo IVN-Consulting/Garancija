@@ -56,6 +56,27 @@ class CreateUpdateWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
         fields = '__all__'
+        extra_kwargs = {
+            'customer': {'required': True}
+        }
+
+    def validate(self, attrs):
+        start_date = attrs.get('start_date') or self.instance.start_date
+        end_date = attrs.get('end_date') or self.instance.end_date
+
+        if start_date > end_date:
+            raise serializers.ValidationError('End date must occur after start date')
+        return super().validate(attrs)
+
+    def validate_salesperson(self, value):
+        if value.user_type != "employee":
+            raise exceptions.ValidationError("Salesperson must be user of type employee")
+        return value
+
+    def validate_customer(self, value):
+        if value.user_type != "customer":
+            raise exceptions.ValidationError("Customer must be user of type customer")
+        return value
 
 
 class ListWarrantySerializer(serializers.ModelSerializer):
