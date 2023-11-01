@@ -79,7 +79,6 @@ class CreateUpdateWarrantySerializer(serializers.ModelSerializer):
         return value
 
 
-
 class ListWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
