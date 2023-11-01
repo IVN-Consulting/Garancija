@@ -53,25 +53,3 @@ class WarrantyViewSet(viewsets.ModelViewSet):
         output_serializer = serializers.ListWarrantySerializer(warranty)
         output_data = output_serializer.data
         return response.Response(output_data, status=status.HTTP_201_CREATED)
-
-
-class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(user_type='customer')
-    serializer_class = serializers.CustomerSerializer
-
-
-class WarrantiesByCustomer(viewsets.ModelViewSet):
-
-    def get_serializer_class(self):
-        if self.action in ["create", 'update', 'partial_update', 'destroy']:
-            return serializers.WarrantiesWithoutCustomerSerializer
-        else:
-            return serializers.ListWarrantiesForCustomerSerializer
-
-    def get_queryset(self):
-        customer_id = int(self.kwargs['customer_id'])
-        try:
-            customer = User.objects.get(user_type='customer', id=customer_id)
-            return customer.warranties.all()
-        except User.DoesNotExist:
-            raise exceptions.NotFound
