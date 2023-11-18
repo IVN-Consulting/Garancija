@@ -1,8 +1,11 @@
-from rest_framework import views, response, generics, permissions
+from rest_framework import response, generics, permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
 class CustomPermission(permissions.BasePermission):
+
     message = 'NE MOZE'
+
     def has_permission(self, request, view):
         return True
 
