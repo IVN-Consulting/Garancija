@@ -2,6 +2,7 @@ from django.urls import path
 from garancija import views
 from rest_framework.routers import DefaultRouter
 
+
 router = DefaultRouter()
 
 router.register(r'shops', views.ShopViewSet, basename="shops")
@@ -11,5 +12,5 @@ router.register(r'customers', views.CustomersViewSet, basename="customers")
 
 urlpatterns = [
     *router.urls,
-    path('health', views.Healthcheck.as_view(), name="healthcheck"),
+    path('health', views.Healthcheck.as_view(), name="healthcheck")
 ]

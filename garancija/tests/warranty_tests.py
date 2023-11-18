@@ -4,15 +4,23 @@ from model_bakery import baker
 from garancija.models import Warranty
 from rest_framework.reverse import reverse
 from user.models import User
+from django.core.management import call_command
+from django.contrib.auth.models import Group
 
 
 client = APIClient()
 
 
+@pytest.fixture
+def load_groups():
+    call_command("generate_roles")
+
+
 @pytest.mark.django_db
-def test_list_warranties():
+def test_list_warranties(load_groups):
     # Given
     customer = baker.make(User, user_type='customer')
+    customer.groups.add(Group.objects.get(name='customer'))
     num_of_warranty = 10
     warranty_ids = []
     for _ in range(num_of_warranty):
@@ -21,6 +29,7 @@ def test_list_warranties():
 
     # When
     url = reverse("warranty-list")
+    client.force_authenticate(customer)
     response = client.get(url)
 
     # Then
