@@ -24,3 +24,12 @@ class User(AbstractUser):
         super().clean()
         if self.user_type == "employee" and self.shop is None:
             raise Exception("employee without a shop")
+
+    class Meta(AbstractUser.Meta):
+        permissions = (
+            ('can_create_warranty', 'can_create_warranty'),
+            ('can_edit_warranty', 'can_edit_warranty'),
+            ('can_delete_warranty', 'can_delete_warranty'),
+            ("can_view_my_warranty", "can_view_my_warranty"),
+            ("can_view_shop_warranty", "can_view_shop_warranty")
+        )

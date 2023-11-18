@@ -1,6 +1,6 @@
-from rest_framework import views, exceptions, viewsets, response, status
+from rest_framework import views, exceptions, viewsets, response, status, permissions
 from garancija.models import Warranty, Shop
-from garancija import serializers
+from garancija import serializers, permissions as warranty_permissions
 from user.models import User
 
 
@@ -38,6 +38,24 @@ class CustomersViewSet(viewsets.ModelViewSet):
 
 class WarrantyViewSet(viewsets.ModelViewSet):
     queryset = Warranty.objects.all()
+
+    def get_queryset(self):
+        my_warranties = warranty_permissions.CanViewWarrantyMyPermission()
+        if my_warranties.has_permission(self.request, self):
+            return Warranty.objects.filter(customer=self.request.user)
+
+        shop_warranties = warranty_permissions.CanViewWarrantyShopPermission()
+        if shop_warranties.has_permission(self.request, self):
+            return Warranty.objects.filter(salesperson__shop=self.request.user.shop)
+
+        return Warranty.objects.none()
+
+    def get_permissions(self):
+        can_view = warranty_permissions.CanViewWarrantyMyPermission | warranty_permissions.CanViewWarrantyShopPermission
+        if self.action in ['list']:
+            return (permissions.IsAuthenticated(), can_view(),)
+        else:
+            return (permissions.IsAuthenticated(), warranty_permissions.ForbidPermission())
 
     def get_serializer_class(self):
         if self.action in ["create", 'update', 'partial_update']:
