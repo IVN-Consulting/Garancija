@@ -9,6 +9,7 @@ class CustomPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return True
 
+
 class MeView(generics.GenericAPIView):
 
     authentication_classes = (JWTAuthentication,)
