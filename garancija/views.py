@@ -65,6 +65,7 @@ class WarrantyViewSet(viewsets.ModelViewSet):
             return permissions.IsAuthenticated(), can_delete(),
         else:
             return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission(),
+
     def get_serializer_class(self):
         if self.action in ["create", 'update', 'partial_update']:
             return serializers.CreateUpdateWarrantySerializer
