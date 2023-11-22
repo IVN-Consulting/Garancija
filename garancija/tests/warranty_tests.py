@@ -17,7 +17,7 @@ def load_groups():
 
 
 @pytest.mark.django_db
-def test_list_warranties(load_groups):
+def test_list_warranties_customer(load_groups):
     # Given
     customer = baker.make(User, user_type='customer')
     customer.groups.add(Group.objects.get(name='customer'))
@@ -39,13 +39,15 @@ def test_list_warranties(load_groups):
 
 
 @pytest.mark.django_db
-def test_retrieve_warranty():
+def test_retrieve_warranty_customer(load_groups):
     # Given
     customer = baker.make(User, user_type='customer')
+    customer.groups.add(Group.objects.get(name='customer'))
     warranty = baker.make(Warranty, customer=customer)
 
     # When
     url = reverse("warranty-detail", args=[warranty.id])
+    client.force_authenticate(customer)
     response = client.get(url)
 
     # Then
@@ -60,9 +62,10 @@ def test_retrieve_warranty():
 
 
 @pytest.mark.django_db
-def test_create_warranty():
+def test_create_warranty_customer(load_groups):
     # Given
     customer = baker.make(User, user_type='customer')
+    customer.groups.add(Group.objects.get(name='customer'))
     salesperson = baker.make(User, user_type="employee")
     data = {
         "product_name": "test name",
@@ -73,92 +76,74 @@ def test_create_warranty():
     }
     # When
     url = reverse("warranty-list")
+    client.force_authenticate(customer)
     response = client.post(url, data=data)
     # Then
-    assert response.status_code == 201, response.json()
+    assert response.status_code == 403, response.json()
     resp_data = response.json()
-    assert data['product_name'] == resp_data['product_name']
-    assert data['start_date'] == resp_data['start_date']
-    assert data['end_date'] == resp_data['end_date']
-    assert resp_data['salesperson']['id'] == salesperson.id
-    assert resp_data['customer']['id'] == customer.id
+    assert resp_data == {'detail': 'You do not have permission to perform this action.'}
 
 
 @pytest.mark.django_db
-def test_delete_warranty():
+def test_delete_warranty_customer(load_groups):
     # Given
     customer = baker.make(User, user_type='customer')
+    customer.groups.add(Group.objects.get(name='customer'))
     warranty = baker.make(Warranty, customer=customer)
     # When
     url = reverse("warranty-detail", args=[warranty.id])
-    response_delete = client.delete(url)
-    response_get_after_del = client.get(url)
+    client.force_authenticate(customer)
+    response = client.delete(url)
     # Then
-    assert response_delete.status_code == 204
-    assert response_get_after_del.status_code == 404
+    assert response.status_code == 403
+    resp_data = response.json()
+    assert resp_data == {'detail': 'You do not have permission to perform this action.'}
 
 
 @pytest.mark.django_db
-def test_partial_edit_warranty():
+def test_partial_edit_warranty_customer(load_groups):
     customer = baker.make(User, user_type='customer')
     salesperson = baker.make(User, user_type="employee")
-    test_data = [
-        ['product_name', 'test name'],
-        ['start_date', '2022-10-10'],
-        ['end_date', '2033-10-10'],
-        ['salesperson', salesperson.id],
-        ['customer', customer.id]
-    ]
+    warranty = baker.make(Warranty, customer=customer, salesperson=salesperson)
+    # When
+    url = reverse("warranty-detail", args=[warranty.id])
+    client.force_authenticate(customer)
+    response = client.put(url)
+    assert response.status_code == 403
+    resp_data = response.json()
+    assert resp_data == {'detail': 'You do not have permission to perform this action.'}
 
+
+@pytest.mark.django_db
+def test_edit_warranty_customer(load_groups):
+    # Given
+    customer = baker.make(User, user_type='customer')
+    salesperson = baker.make(User, user_type="employee")
+    warranty = baker.make(Warranty, customer=customer, salesperson=salesperson)
+    # When
+    url = reverse("warranty-detail", args=[warranty.id])
+    response = client.put(url)
+    # Then
+    assert response.status_code == 403
+    resp_data = response.json()
+    assert resp_data == {'detail': 'You do not have permission to perform this action.'}
+
+@pytest.mark.django_db
+def test_retrieve_warranty_other_customer(load_groups):
+    # Given
+    customer = baker.make(User, user_type='customer')
     customer2 = baker.make(User, user_type='customer')
+    customer.groups.add(Group.objects.get(name='customer'))
+    customer2.groups.add(Group.objects.get(name='customer'))
     warranty = baker.make(Warranty, customer=customer2)
+
     # When
     url = reverse("warranty-detail", args=[warranty.id])
+    client.force_authenticate(customer)
+    response = client.get(url)
 
-    for field_name, field_value in test_data:
-        warranty.refresh_from_db()
-        old_data = {
-            warranty_field_name: getattr(warranty, warranty_field_name)
-            for warranty_field_name, non_used_value in test_data
-        }
-
-        response = client.patch(
-            url,
-            data={field_name: field_value}
-        )
-        assert response.status_code == 200
-
-        warranty.refresh_from_db()
-        new_data = {
-            warranty_field_name: getattr(warranty, warranty_field_name)
-            for warranty_field_name, non_used_value in test_data
-        }
-
-        expected = ((field_name, getattr(warranty, field_name)),)
-        assert set(expected) == set(new_data.items()) - set(old_data.items())
-
-
-@pytest.mark.django_db
-def test_edit_warranty():
-    # Given
-    customer = baker.make(User, user_type='customer')
-    salesperson = baker.make(User, user_type="employee")
-    data = {
-        "product_name": "test name",
-        "start_date": "2023-10-10",
-        "end_date": "2033-10-10",
-        "salesperson": salesperson.id,
-        "customer": customer.id
-    }
-    warranty = baker.make(Warranty, customer=customer)
-    # When
-    url = reverse("warranty-detail", args=[warranty.id])
-    response = client.put(url, data=data)
     # Then
-    assert response.status_code == 200, response.json()
-    resp_data = response.json()
-    assert data['product_name'] == resp_data['product_name']
-    assert data['start_date'] == resp_data['start_date']
-    assert data['end_date'] == resp_data['end_date']
-    assert salesperson.id == resp_data['salesperson']
-    assert customer.id == resp_data['customer']
+    assert response.status_code == 404
+
+
+
