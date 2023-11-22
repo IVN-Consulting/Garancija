@@ -53,10 +53,9 @@ class WarrantyViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         can_view = warranty_permissions.CanViewWarrantyMyPermission | warranty_permissions.CanViewWarrantyShopPermission
         can_cud = warranty_permissions.CanCUDWarrantyPermission
-        if self.action in ['list']:
+        if self.action in ['list', 'retrieve']:
             return (permissions.IsAuthenticated(), can_view(),)
-        elif (self.action in ["create", "update", "partial_update", "destroy"] and self.request.user.user_type ==
-              "employee"):
+        elif self.action in ["create", "update", "partial_update", "destroy"] and self.request.user.user_type == 'employee':
             return (permissions.IsAuthenticated(), can_cud())
         else:
             return (permissions.IsAuthenticated(), warranty_permissions.ForbidPermission())
