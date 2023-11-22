@@ -128,6 +128,7 @@ def test_edit_warranty_customer(load_groups):
     resp_data = response.json()
     assert resp_data == {'detail': 'You do not have permission to perform this action.'}
 
+
 @pytest.mark.django_db
 def test_retrieve_warranty_other_customer(load_groups):
     # Given
@@ -144,6 +145,3 @@ def test_retrieve_warranty_other_customer(load_groups):
 
     # Then
     assert response.status_code == 404
-
-
-
