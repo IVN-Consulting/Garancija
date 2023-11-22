@@ -211,7 +211,6 @@ def test_employee_cant_list_warranties_for_other_shop(load_groups):
 
 @pytest.mark.django_db
 def test_employee_retrieve_warranty_for_other_employee(load_groups):
-    #shop = baker.make(Shop)
     shop = baker.make(Shop)
     good_salesperson = baker.make(User, user_type='employee')
     good_salesperson.groups.add(Group.objects.get(name='employee'))
@@ -232,6 +231,7 @@ def test_employee_retrieve_warranty_for_other_employee(load_groups):
     assert data['end_date'] == str(good_warranty.end_date)
     assert data['salesperson']['id'] == good_warranty.salesperson.id
     assert data['customer']['id'] == good_warranty.customer.id
+    print(bad_warranty)
 
 
 @pytest.mark.django_db
@@ -255,3 +255,4 @@ def test_customer_retrieve_warranty_for_other_customer(load_groups):
     assert data['end_date'] == str(good_warranty.end_date)
     assert data['salesperson']['id'] == good_warranty.salesperson.id
     assert data['customer']['id'] == good_warranty.customer.id
+    print(bad_warranty)
