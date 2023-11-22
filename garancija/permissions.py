@@ -14,3 +14,9 @@ class CanViewWarrantyMyPermission(permissions.BasePermission):
 class ForbidPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return False
+
+
+class CanCUDWarrantyPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return ('user.can_create_warranty', 'user.can_edit_warranty', 'user.can_delete_warranty' in
+                request.user.get_all_permissions())
