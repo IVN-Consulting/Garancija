@@ -83,7 +83,7 @@ class ListWarrantySerializer(serializers.ModelSerializer):
     class Meta:
         model = Warranty
         fields = '__all__'
-        depth = 1
+        depth = 2
 
 
 class PartialUpdateWarrantySerializer(serializers.ModelSerializer):
