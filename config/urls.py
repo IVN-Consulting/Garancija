@@ -25,4 +25,5 @@ urlpatterns = [
     path("syncer", views.SyncerEndpoint.as_view()),
     path("api/", include("garancija.urls")),
     path("auth/", include("user.auth_urls")),
+    path('silk/', include('silk.urls', namespace='silk'))
 ]

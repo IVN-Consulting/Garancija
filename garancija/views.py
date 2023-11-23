@@ -37,22 +37,29 @@ class CustomersViewSet(viewsets.ModelViewSet):
 
 
 class WarrantyViewSet(viewsets.ModelViewSet):
-    queryset = Warranty.objects.all()
 
     def get_queryset(self):
 
+        objects = Warranty.objects\
+            .select_related("salesperson__shop")\
+            .select_related("customer__shop")\
+            .prefetch_related("customer__groups__permissions")\
+            .prefetch_related("salesperson__groups__permissions")\
+            .prefetch_related("customer__user_permissions")\
+            .prefetch_related("salesperson__user_permissions")
+
         if self.request.user.is_superuser:
-            return Warranty.objects.all()
+            return objects.all()
 
         my_warranties = warranty_permissions.CanViewWarrantyMyPermission()
         if my_warranties.has_permission(self.request, self):
-            return Warranty.objects.filter(customer=self.request.user)
+            return objects.filter(customer=self.request.user)
 
         shop_warranties = warranty_permissions.CanViewWarrantyShopPermission()
         if shop_warranties.has_permission(self.request, self):
-            return Warranty.objects.filter(salesperson__shop=self.request.user.shop)
+            return objects.filter(salesperson__shop=self.request.user.shop)
 
-        return Warranty.objects.none()
+        return objects.none()
 
     def get_permissions(self):
         can_view = warranty_permissions.CanViewWarrantyMyPermission | warranty_permissions.CanViewWarrantyShopPermission
