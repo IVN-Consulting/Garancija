@@ -52,10 +52,19 @@ class WarrantyViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         can_view = warranty_permissions.CanViewWarrantyMyPermission | warranty_permissions.CanViewWarrantyShopPermission
-        if self.action in ['list']:
-            return (permissions.IsAuthenticated(), can_view(),)
+        can_create = warranty_permissions.CanCreateWarrantyPermission
+        can_edit = warranty_permissions.CanEditWarrantyPermission
+        can_delete = warranty_permissions.CanDeleteWarrantyPermission
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), can_view(),
+        elif self.action == 'create':
+            return permissions.IsAuthenticated(), can_create(),
+        elif self.action in ['update', 'partial_update']:
+            return permissions.IsAuthenticated(), can_edit(),
+        elif self.action == 'destroy':
+            return permissions.IsAuthenticated(), can_delete(),
         else:
-            return (permissions.IsAuthenticated(), warranty_permissions.ForbidPermission())
+            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission(),
 
     def get_serializer_class(self):
         if self.action in ["create", 'update', 'partial_update']:
