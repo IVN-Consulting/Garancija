@@ -57,11 +57,11 @@ class WarrantyViewSet(viewsets.ModelViewSet):
         can_delete = warranty_permissions.CanDeleteWarrantyPermission
         if self.action in ['list', 'retrieve']:
             return permissions.IsAuthenticated(), can_view(),
-        elif self.action == 'create' and self.request.user.user_type == 'employee':
+        elif self.action == 'create':
             return permissions.IsAuthenticated(), can_create(),
-        elif self.action in ['update', 'partial_update'] and self.request.user.user_type == 'employee':
+        elif self.action in ['update', 'partial_update']:
             return permissions.IsAuthenticated(), can_edit(),
-        elif self.action == 'destroy' and self.request.user.user_type == 'employee':
+        elif self.action == 'destroy':
             return permissions.IsAuthenticated(), can_delete(),
         else:
             return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission(),
