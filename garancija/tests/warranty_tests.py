@@ -151,4 +151,3 @@ def test_retrieve_warranty_other_customer(load_groups):
 
     # Then
     assert response.status_code == 200
-
