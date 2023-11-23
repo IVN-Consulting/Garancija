@@ -40,6 +40,10 @@ class WarrantyViewSet(viewsets.ModelViewSet):
     queryset = Warranty.objects.all()
 
     def get_queryset(self):
+
+        if self.request.user.is_superuser:
+            return Warranty.objects.all()
+
         my_warranties = warranty_permissions.CanViewWarrantyMyPermission()
         if my_warranties.has_permission(self.request, self):
             return Warranty.objects.filter(customer=self.request.user)

@@ -345,3 +345,19 @@ def test_employee_cant_list_warranties_for_other_shop(load_groups):
     assert response.status_code == 200
     data = response.json()
     assert data == []
+
+
+@pytest.mark.django_db
+def test_admin_can_list_warranties(load_groups):
+    admin = baker.make(User, is_superuser=True)
+    num_of_warranty = 10
+    warranty_ids = []
+    for _ in range(num_of_warranty):
+        warranty = baker.make(Warranty)
+        warranty_ids.append(warranty.id)
+
+    url = reverse("warranty-list")
+    client.force_authenticate(admin)
+    response = client.get(url)
+    assert response.status_code == 200
+    assert len(response.json()) == num_of_warranty
