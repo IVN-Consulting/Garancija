@@ -13,6 +13,13 @@ class ShopViewSet(viewsets.ModelViewSet):
     queryset = Shop.objects.all()
     serializer_class = serializers.ShopSerializer
 
+    def get_permissions(self):
+        can_do_crud = warranty_permissions.IsSuperuserPermission
+        if self.action in ["list", "retrieve", "create", 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), can_do_crud(),
+        else:
+            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
+
 
 class EmployeesViewSet(viewsets.ModelViewSet):
 
@@ -23,17 +30,50 @@ class EmployeesViewSet(viewsets.ModelViewSet):
             return serializers.EmployeeSerializer
 
     def get_queryset(self):
+        objects = User.objects.select_related("shop")
         shop_id = int(self.kwargs['shop_id'])
         try:
             shop = Shop.objects.get(id=shop_id)
-            return User.objects.filter(user_type="employee", shop=shop)
+            return objects.filter(user_type="employee", shop=shop)
         except Shop.DoesNotExist:
             raise exceptions.NotFound
+
+    def get_permissions(self):
+        can_view = warranty_permissions.CanViewEmployeeShopPermission
+        can_create = warranty_permissions.CanCreateEmployeePermission
+        can_edit = warranty_permissions.CanEditEmployeePermission
+        can_delete = warranty_permissions.CanDeleteEmployeePermission
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), can_view()
+        elif self.action == "create":
+            return permissions.IsAuthenticated(), can_create(),
+        elif self.action in ["update", "partial_update"]:
+            return permissions.IsAuthenticated(), can_edit(),
+        elif self.action == "destroy":
+            return permissions.IsAuthenticated(), can_delete(),
+        else:
+            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class CustomersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type="customer")
     serializer_class = serializers.CustomerSerializer
+
+    def get_permissions(self):
+        can_view = warranty_permissions.CanViewCustomerPermission
+        can_create = warranty_permissions.CanCreateCustomerPermission
+        can_edit = warranty_permissions.CanEditCustomerPermission
+        can_delete = warranty_permissions.CanDeleteCustomerPermission
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), can_view(),
+        elif self.action == "create":
+            return permissions.IsAuthenticated(), can_create(),
+        elif self.action in ["update", "partial_update"]:
+            return permissions.IsAuthenticated(), can_edit(),
+        elif self.action == "destroy":
+            return permissions.IsAuthenticated(), can_delete(),
+        else:
+            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class WarrantyViewSet(viewsets.ModelViewSet):
@@ -75,7 +115,7 @@ class WarrantyViewSet(viewsets.ModelViewSet):
         elif self.action == 'destroy':
             return permissions.IsAuthenticated(), can_delete(),
         else:
-            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission(),
+            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
     def get_serializer_class(self):
         if self.action in ["create", 'update', 'partial_update']:

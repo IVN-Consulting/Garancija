@@ -1,4 +1,6 @@
 from rest_framework import permissions
+from garancija.models import User
+from garancija.models import Shop
 
 
 class CanViewWarrantyShopPermission(permissions.BasePermission):
@@ -29,3 +31,62 @@ class CanEditWarrantyPermission(permissions.BasePermission):
 class CanDeleteWarrantyPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return 'user.can_delete_warranty' in request.user.get_all_permissions()
+
+
+class CanViewCustomerPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return 'user.can_view_customer' in request.user.get_all_permissions()
+
+
+class CanCreateCustomerPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+
+class CanEditCustomerPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+
+class CanDeleteCustomerPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+
+class CanViewEmployeeShopPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+        elif request.user.user_type == "employee":
+            shop_id = int(view.kwargs['shop_id'])
+            if request.user.shop.id == shop_id:
+                return 'user.can_view_shop_employee' in request.user.get_all_permissions()
+            else:
+                return False
+
+
+class CanCreateEmployeePermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+
+class CanEditEmployeePermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+
+class CanDeleteEmployeePermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+
+class IsSuperuserPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
