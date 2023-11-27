@@ -31,5 +31,7 @@ class User(AbstractUser):
             ('can_edit_warranty', 'can_edit_warranty'),
             ('can_delete_warranty', 'can_delete_warranty'),
             ("can_view_my_warranty", "can_view_my_warranty"),
-            ("can_view_shop_warranty", "can_view_shop_warranty")
+            ("can_view_shop_warranty", "can_view_shop_warranty"),
+            ("can_view_shop_employee", "can_view_shop_employee"),
+            ("can_view_customer", "can_view_customer")
         )

@@ -12,6 +12,7 @@ class Healthcheck(views.APIView):
 class ShopViewSet(viewsets.ModelViewSet):
     queryset = Shop.objects.all()
     serializer_class = serializers.ShopSerializer
+    permission_classes = [warranty_permissions.ShopPermissions]
 
 
 class EmployeesViewSet(viewsets.ModelViewSet):
@@ -23,17 +24,38 @@ class EmployeesViewSet(viewsets.ModelViewSet):
             return serializers.EmployeeSerializer
 
     def get_queryset(self):
-        shop_id = int(self.kwargs['shop_id'])
-        try:
-            shop = Shop.objects.get(id=shop_id)
-            return User.objects.filter(user_type="employee", shop=shop)
-        except Shop.DoesNotExist:
-            raise exceptions.NotFound
+
+        if self.request.user.is_superuser:
+            return User.objects.filter(user_type="employee")
+
+        if warranty_permissions.CanViewShopEmployeesPermission().has_permission(self.request, self):
+            shop_id = int(self.kwargs['shop_id'])
+            try:
+                shop = Shop.objects.get(id=shop_id)
+                return User.objects.filter(user_type="employee", shop=shop)
+            except Shop.DoesNotExist:
+                raise exceptions.NotFound
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), warranty_permissions.CanViewShopEmployeesPermission(),
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), warranty_permissions.IsSuperUserPermission(),
+        else:
+            permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class CustomersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type="customer")
     serializer_class = serializers.CustomerSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), warranty_permissions.CanViewCustomerPermission(),
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), warranty_permissions.IsSuperUserPermission()
+        else:
+             permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class WarrantyViewSet(viewsets.ModelViewSet):
