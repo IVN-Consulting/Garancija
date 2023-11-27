@@ -55,7 +55,7 @@ class CustomersViewSet(viewsets.ModelViewSet):
         elif self.action in ['create', 'update', 'partial_update', 'destroy']:
             return permissions.IsAuthenticated(), warranty_permissions.IsSuperUserPermission()
         else:
-             permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
+            permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class WarrantyViewSet(viewsets.ModelViewSet):
