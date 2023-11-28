@@ -31,11 +31,6 @@ class CanDeleteWarrantyPermission(permissions.BasePermission):
         return 'user.can_delete_warranty' in request.user.get_all_permissions()
 
 
-class ShopPermissions(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_superuser
-
-
 class CanViewShopEmployeesPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_superuser:

@@ -12,7 +12,7 @@ class Healthcheck(views.APIView):
 class ShopViewSet(viewsets.ModelViewSet):
     queryset = Shop.objects.all()
     serializer_class = serializers.ShopSerializer
-    permission_classes = [warranty_permissions.ShopPermissions]
+    permission_classes = [warranty_permissions.IsSuperUserPermission]
 
 
 class EmployeesViewSet(viewsets.ModelViewSet):
@@ -24,17 +24,13 @@ class EmployeesViewSet(viewsets.ModelViewSet):
             return serializers.EmployeeSerializer
 
     def get_queryset(self):
-
-        if self.request.user.is_superuser:
-            return User.objects.filter(user_type="employee")
-
-        if warranty_permissions.CanViewShopEmployeesPermission().has_permission(self.request, self):
-            shop_id = int(self.kwargs['shop_id'])
-            try:
-                shop = Shop.objects.get(id=shop_id)
-                return User.objects.filter(user_type="employee", shop=shop)
-            except Shop.DoesNotExist:
-                raise exceptions.NotFound
+        objects = User.objects.select_related("shop")
+        shop_id = int(self.kwargs['shop_id'])
+        try:
+            shop = Shop.objects.get(id=shop_id)
+            return objects.filter(user_type="employee", shop=shop)
+        except Shop.DoesNotExist:
+            raise exceptions.NotFound
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
