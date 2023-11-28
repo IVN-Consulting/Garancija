@@ -44,7 +44,7 @@ def test_admin_can_list_customers(load_groups):
     i = 0
     for _ in range(num_of_customers):
         name = 'test'
-        customer = baker.make(User, user_type="customer", first_name = f'{name}{i}')
+        customer = baker.make(User, user_type="customer", first_name=f'{name}{i}')
         customer.groups.add(Group.objects.get(name='customer'))
         customer_ids.append(customer.id)
         i += 1
@@ -218,7 +218,6 @@ def test_employee_can_partial_update_customer(load_groups):
     url = reverse("customers-detail", args=[customer.id])
     client.force_authenticate(employee)
     response = client.patch(url, data=data)
-    r_data = response.json()
 
     assert response.status_code == 403
 

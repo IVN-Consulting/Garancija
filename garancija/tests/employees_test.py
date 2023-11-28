@@ -265,7 +265,6 @@ def test_employee_cant_partial_update_employee(load_groups):
     url = reverse("employees-detail", args=[shop.id, emp2.id])
     client.force_authenticate(emp)
     response = client.patch(url, data=data)
-    r_data = response.json()
 
     assert response.status_code == 403
 
