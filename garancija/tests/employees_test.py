@@ -3,7 +3,6 @@ from garancija.models import Shop
 from model_bakery import baker
 from rest_framework.test import APIClient
 from rest_framework.reverse import reverse
-from user.models import User
 from django.core.management import call_command
 from django.contrib.auth.models import Group
 from user.models import User
@@ -42,8 +41,6 @@ def test_list_employees_admin(load_groups):
     data_emp_id = [int(x['id']) for x in data]
     assert employee2.id in data_emp_id
     assert employee.id not in data_emp_id
-
-
 
 
 @pytest.mark.django_db
