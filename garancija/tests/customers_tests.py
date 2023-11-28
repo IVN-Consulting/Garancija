@@ -41,13 +41,10 @@ def test_admin_can_list_customers(load_groups):
     admin = baker.make(User, is_superuser=True)
     num_of_customers = 10
     customer_ids = []
-    i = 0
     for _ in range(num_of_customers):
-        name = 'test'
-        customer = baker.make(User, user_type="customer", first_name=f'{name}{i}')
+        customer = baker.make(User, user_type='customer')
         customer.groups.add(Group.objects.get(name='customer'))
         customer_ids.append(customer.id)
-        i += 1
 
     url = reverse("customers-list")
     client.force_authenticate(admin)
@@ -55,6 +52,9 @@ def test_admin_can_list_customers(load_groups):
 
     assert response.status_code == 200
     data = response.json()
+    print(customer_ids)
+    print([x['id'] for x in data])
+
     assert set(customer_ids) == set([x['id'] for x in data])
 
 
