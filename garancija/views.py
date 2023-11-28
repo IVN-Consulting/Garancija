@@ -10,6 +10,7 @@ class Healthcheck(views.APIView):
 
 
 class ShopViewSet(viewsets.ModelViewSet):
+    permission_classes = [warranty_permissions.IsSuperuserPermission]
     queryset = Shop.objects.all()
     serializer_class = serializers.ShopSerializer
 
@@ -40,19 +41,13 @@ class EmployeesViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         can_view = warranty_permissions.CanViewEmployeeShopPermission
-        can_create = warranty_permissions.CanCreateEmployeePermission
-        can_edit = warranty_permissions.CanEditEmployeePermission
-        can_delete = warranty_permissions.CanDeleteEmployeePermission
+        is_superuser = warranty_permissions.IsSuperuserPermission
         if self.action in ['list', 'retrieve']:
-            return permissions.IsAuthenticated(), can_view()
-        elif self.action == "create":
-            return permissions.IsAuthenticated(), can_create(),
-        elif self.action in ["update", "partial_update"]:
-            return permissions.IsAuthenticated(), can_edit(),
-        elif self.action == "destroy":
-            return permissions.IsAuthenticated(), can_delete(),
+            return permissions.IsAuthenticated(), can_view(),
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), is_superuser()
         else:
-            return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
+            return warranty_permissions.ForbidPermission()
 
 
 class CustomersViewSet(viewsets.ModelViewSet):
@@ -61,17 +56,11 @@ class CustomersViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         can_view = warranty_permissions.CanViewCustomerPermission
-        can_create = warranty_permissions.CanCreateCustomerPermission
-        can_edit = warranty_permissions.CanEditCustomerPermission
-        can_delete = warranty_permissions.CanDeleteCustomerPermission
+        is_superuser = warranty_permissions.IsSuperuserPermission
         if self.action in ['list', 'retrieve']:
             return permissions.IsAuthenticated(), can_view(),
-        elif self.action == "create":
-            return permissions.IsAuthenticated(), can_create(),
-        elif self.action in ["update", "partial_update"]:
-            return permissions.IsAuthenticated(), can_edit(),
-        elif self.action == "destroy":
-            return permissions.IsAuthenticated(), can_delete(),
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), is_superuser()
         else:
             return permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 

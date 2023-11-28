@@ -1,6 +1,4 @@
 from rest_framework import permissions
-from garancija.models import User
-from garancija.models import Shop
 
 
 class CanViewWarrantyShopPermission(permissions.BasePermission):
@@ -38,24 +36,6 @@ class CanViewCustomerPermission(permissions.BasePermission):
         return 'user.can_view_customer' in request.user.get_all_permissions()
 
 
-class CanCreateCustomerPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
-
-
-class CanEditCustomerPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
-
-
-class CanDeleteCustomerPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
-
-
 class CanViewEmployeeShopPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_superuser:
@@ -66,24 +46,6 @@ class CanViewEmployeeShopPermission(permissions.BasePermission):
                 return 'user.can_view_shop_employee' in request.user.get_all_permissions()
             else:
                 return False
-
-
-class CanCreateEmployeePermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
-
-
-class CanEditEmployeePermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
-
-
-class CanDeleteEmployeePermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
 
 
 class IsSuperuserPermission(permissions.BasePermission):
