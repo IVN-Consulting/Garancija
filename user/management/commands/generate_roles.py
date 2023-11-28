@@ -17,6 +17,8 @@ class Command(BaseCommand):
             'can_edit_warranty',
             'can_delete_warranty',
             'can_view_shop_warranty',
+            'can_view_customer',
+            'can_view_shop_employee',
         )
 
         customer_permissions = (
