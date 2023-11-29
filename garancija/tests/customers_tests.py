@@ -8,7 +8,6 @@ from django.contrib.auth.models import Group
 from garancija.models import Shop
 
 
-
 client = APIClient()
 
 
@@ -23,9 +22,11 @@ def test_list_customers_admin(load_groups):
     admin = baker.make(User, is_superuser=True)
     num_of_customers = 10
     customer_ids = []
-    for _ in range(num_of_customers):
+
+    for i in range(1, num_of_customers + 1):
         customer = baker.make(User, user_type="customer")
-        customer_ids.append(customer.id)
+        if customer.id != admin.id:
+            customer_ids.append(customer.id)
     # When
     url = reverse("customers-list")
     client.force_authenticate(admin)
@@ -220,6 +221,7 @@ def test_update_customer_employee(load_groups):
     response = client.patch(url, data=data)
     # Then
     assert response.status_code == 403
+
 
 @pytest.mark.django_db
 def test_partial_update_customer_employee(load_groups):
