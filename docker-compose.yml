@@ -1,6 +1,4 @@
----
 version: '3'
-
 services:
   db:
     image: postgres:15.4
@@ -11,7 +9,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
   app:
     build:
       context: .
@@ -27,6 +24,26 @@ services:
       - db
     environment:
       DJANGO_SETTINGS_MODULE: config.settings
+      CELERY_BROKER: redis://redis:6379/0
+      CELERY_BACKEND: redis://redis:6379/0
+
+  redis:
+    image: redis:alpine
+  celery:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A config worker -l INFO
+    volumes:
+      - .:/app
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    depends_on:
+      - db
+      - redis
+      - app
 
 volumes:
   db-data:
