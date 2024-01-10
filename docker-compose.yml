@@ -22,25 +22,28 @@ services:
     tty: true
     depends_on:
       - db
-      - redis
     environment:
       DJANGO_SETTINGS_MODULE: config.settings
       CELERY_BROKER: redis://redis:6379/0
       CELERY_BACKEND: redis://redis:6379/0
 
+  redis:
+    image: redis:alpine
   celery:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
     command: celery -A config worker -l INFO
     volumes:
       - .:/app
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     depends_on:
-      - app
+      - db
       - redis
-
-  redis:
-    image: "redis:alpine"
+      - app
 
 volumes:
   db-data:
