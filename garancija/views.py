@@ -132,4 +132,3 @@ class RegisterEmployeeView(generics.CreateAPIView):
         context = super(RegisterEmployeeView, self).get_serializer_context()
         context.update({'shop_id': shop_id})
         return context
-
