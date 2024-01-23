@@ -1,7 +1,12 @@
 from rest_framework import views, exceptions, viewsets, response, status, permissions
 from garancija.models import Warranty, Shop
 from garancija import serializers, permissions as warranty_permissions
+from rest_framework.permissions import AllowAny
 from user.models import User
+
+from .permissions import CanViewShopEmployeesPermission
+from .serializers import RegisterCustomerSerializer, RegisterEmployeeSerializer
+from rest_framework import generics
 
 
 class Healthcheck(views.APIView):
@@ -12,6 +17,7 @@ class Healthcheck(views.APIView):
 class ShopViewSet(viewsets.ModelViewSet):
     queryset = Shop.objects.all()
     serializer_class = serializers.ShopSerializer
+    permission_classes = [warranty_permissions.IsSuperUserPermission]
 
 
 class EmployeesViewSet(viewsets.ModelViewSet):
@@ -23,17 +29,34 @@ class EmployeesViewSet(viewsets.ModelViewSet):
             return serializers.EmployeeSerializer
 
     def get_queryset(self):
+        objects = User.objects.select_related("shop")
         shop_id = int(self.kwargs['shop_id'])
         try:
             shop = Shop.objects.get(id=shop_id)
-            return User.objects.filter(user_type="employee", shop=shop)
+            return objects.filter(user_type="employee", shop=shop)
         except Shop.DoesNotExist:
             raise exceptions.NotFound
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), warranty_permissions.CanViewShopEmployeesPermission(),
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), warranty_permissions.IsSuperUserPermission(),
+        else:
+            permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class CustomersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type="customer")
     serializer_class = serializers.CustomerSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return permissions.IsAuthenticated(), warranty_permissions.CanViewCustomerPermission(),
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return permissions.IsAuthenticated(), warranty_permissions.IsSuperUserPermission()
+        else:
+            permissions.IsAuthenticated(), warranty_permissions.ForbidPermission()
 
 
 class WarrantyViewSet(viewsets.ModelViewSet):
@@ -91,3 +114,21 @@ class WarrantyViewSet(viewsets.ModelViewSet):
         output_serializer = serializers.ListWarrantySerializer(warranty)
         output_data = output_serializer.data
         return response.Response(output_data, status=status.HTTP_201_CREATED)
+
+
+class RegisterCustomerView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterCustomerSerializer
+
+
+class RegisterEmployeeView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [CanViewShopEmployeesPermission]
+    serializer_class = RegisterEmployeeSerializer
+
+    def get_serializer_context(self):
+        shop_id = self.kwargs.get('shop_id')
+        context = super(RegisterEmployeeView, self).get_serializer_context()
+        context.update({'shop_id': shop_id})
+        return context

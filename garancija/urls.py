@@ -1,7 +1,8 @@
 from django.urls import path
 from garancija import views
 from rest_framework.routers import DefaultRouter
-
+from garancija.views import RegisterCustomerView
+from garancija.views import RegisterEmployeeView
 
 router = DefaultRouter()
 
@@ -12,5 +13,7 @@ router.register(r'customers', views.CustomersViewSet, basename="customers")
 
 urlpatterns = [
     *router.urls,
-    path('health', views.Healthcheck.as_view(), name="healthcheck")
+    path('health', views.Healthcheck.as_view(), name="healthcheck"),
+    path('register_customer/', RegisterCustomerView.as_view(), name='register_customer'),
+    path('shops/<int:shop_id>/register_employee/', RegisterEmployeeView.as_view(), name='register_customer'),
 ]
