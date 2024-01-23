@@ -1,7 +1,12 @@
 from rest_framework import views, exceptions, viewsets, response, status, permissions
 from garancija.models import Warranty, Shop
 from garancija import serializers, permissions as warranty_permissions
+from rest_framework.permissions import AllowAny
 from user.models import User
+
+from .permissions import CanViewShopEmployeesPermission
+from .serializers import RegisterCustomerSerializer, RegisterEmployeeSerializer
+from rest_framework import generics
 
 
 class Healthcheck(views.APIView):
@@ -109,3 +114,22 @@ class WarrantyViewSet(viewsets.ModelViewSet):
         output_serializer = serializers.ListWarrantySerializer(warranty)
         output_data = output_serializer.data
         return response.Response(output_data, status=status.HTTP_201_CREATED)
+
+
+class RegisterCustomerView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterCustomerSerializer
+
+
+class RegisterEmployeeView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [CanViewShopEmployeesPermission]
+    serializer_class = RegisterEmployeeSerializer
+
+    def get_serializer_context(self):
+        shop_id = self.kwargs.get('shop_id')
+        context = super(RegisterEmployeeView, self).get_serializer_context()
+        context.update({'shop_id': shop_id})
+        return context
+

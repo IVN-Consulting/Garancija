@@ -33,14 +33,16 @@ class CanDeleteWarrantyPermission(permissions.BasePermission):
 
 class CanViewShopEmployeesPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_superuser:
-            return True
-        elif request.user.user_type == "employee":
-            shop_id = int(view.kwargs['shop_id'])
-            if request.user.shop_id == shop_id:
-                return 'user.can_view_shop_employee' in request.user.get_all_permissions()
-            else:
-                return False
+        if request.user.is_authenticated:
+            if request.user.is_superuser:
+                return True
+            elif request.user.user_type == "employee":
+                shop_id = int(view.kwargs.get('shop_id', None))
+                if shop_id is not None and request.user.shop_id == shop_id:
+                    return 'user.can_view_shop_employee' in request.user.get_all_permissions()
+                else:
+                    return False
+        return False
 
 
 class CanViewCustomerPermission(permissions.BasePermission):
